@@ -1,0 +1,500 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>桐榮祭 2026 The Memoryies</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Shippori+Mincho:wght@600&family=Cormorant+Garamond:ital,wght@1,500&family=Yomogi&display=swap" rel="stylesheet">
+<style>
+:root{--paper:#fff8ee;--ink:#1d2a63;--coral:#ee6c4d;color-scheme:light}
+*{box-sizing:border-box}
+html,body{height:100%;margin:0;background:var(--paper);overflow:hidden;-webkit-tap-highlight-color:transparent}
+#fit{position:absolute;width:1920px;height:1080px;transform-origin:0 0}
+#stage{position:absolute;inset:0;overflow:hidden;cursor:pointer;
+ background:radial-gradient(ellipse 55% 65% at 50% 45%,#fffefa 0%,#fff3e4 45%,#ffdcd2 85%,#ffcfd6 100%)}
+#cam{position:absolute;inset:0;transform-origin:50% 48%}
+canvas{position:absolute;inset:0}
+svg{position:absolute;inset:0;width:1920px;height:1080px;overflow:visible}
+.ch{fill:var(--ink);fill-opacity:0;stroke:var(--coral);stroke-linejoin:round;stroke-linecap:round;stroke-dasharray:6000 100000;stroke-dashoffset:6100;
+ filter:drop-shadow(0 6px 14px rgba(238,108,77,.28))}
+.jp{font-family:"Shippori Mincho","Yu Mincho","Hiragino Mincho ProN",serif;font-weight:600}
+.en{font-family:"Cormorant Garamond","Georgia",serif;font-style:italic;font-weight:500}
+.ring{fill:none;stroke:var(--coral);stroke-width:2.5;stroke-opacity:.4;stroke-dasharray:3300 100000;stroke-dashoffset:3400;stroke-linecap:round}
+.rule{fill:var(--coral);transform-box:fill-box;transform-origin:center;transform:scaleX(0)}
+@keyframes draw{to{stroke-dashoffset:0}}
+@keyframes fillin{to{fill-opacity:1}}
+@keyframes rise{from{transform:translateY(28px)}to{transform:none}}
+@keyframes grow{to{transform:scaleX(1)}}
+@keyframes zoom{from{transform:scale(1)}to{transform:scale(1.07)}}
+@keyframes out{to{opacity:0}}
+.play #cam{animation:zoom 15s ease-in-out both}
+.play #fade{animation:out .9s ease-in 14.1s both}
+.play .ch{animation:
+  draw calc(var(--d) * 2.3) cubic-bezier(.4,0,.6,1) var(--t) both,
+  fillin 1.2s ease calc(var(--t) + var(--d) * .55) both,
+  rise calc(var(--d) + .5s) cubic-bezier(.2,.7,.2,1) var(--t) both}
+.play .ring{animation:draw 6s cubic-bezier(.5,0,.2,1) .4s both}
+.play .rule{animation:grow var(--d) cubic-bezier(.6,0,.2,1) var(--t) both}
+.msg{position:absolute;left:0;right:0;text-align:center;color:var(--ink);font:600 34px "Shippori Mincho","Yu Mincho",serif;letter-spacing:.25em}
+#hint{bottom:60px;opacity:0;transition:opacity .8s;font-size:28px}
+#hint.on{opacity:.65}
+#start{inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:28px;background:rgba(255,248,238,.55);backdrop-filter:blur(6px);transition:opacity .6s;font-size:64px}
+#start small{font-size:30px;opacity:.6;letter-spacing:.15em}
+#start.gone{opacity:0;pointer-events:none}
+#start{z-index:20}
+#album{position:absolute;inset:0;perspective:2600px;opacity:0;pointer-events:none;transition:opacity 1.6s ease;z-index:5}
+#album.show{opacity:1}#album.main{pointer-events:auto}
+#fl,#cam2,#book{transform-style:preserve-3d}
+#fl{position:absolute;inset:0;animation:float 7s ease-in-out infinite}
+#album.main #fl{animation:none}
+@keyframes float{0%,100%{transform:translateY(0)}50%{transform:translateY(-14px) rotateZ(.4deg)}}
+#cam2{position:absolute;left:50%;top:50%;width:0;height:0;transform:rotateX(26deg) rotateY(-30deg) scale(.8);transition:transform 2.4s cubic-bezier(.45,.05,.2,1)}
+#album.open #cam2{transform:rotateX(4deg) scale(1.15)}
+#album.dive #cam2{transform:translate(1023px,62px) scale(3.1);transition:transform 1.5s cubic-bezier(.6,0,.9,.5)}
+#album.snap #cam2,#album.snap #book,#album.snap .leaf,#album.snap #shadow{transition:none!important}
+#book{position:absolute;left:-660px;top:-440px;width:1320px;height:880px;transform:translateX(-330px);transition:transform 2.2s cubic-bezier(.45,.05,.2,1)}
+#album.open #book{transform:none}
+#shadow{position:absolute;left:660px;top:30px;width:660px;height:880px;background:rgba(70,40,50,.38);filter:blur(36px);transform:translate3d(0,40px,-60px);transition:all 2.2s cubic-bezier(.45,.05,.2,1)}
+#album.open #shadow{left:0;width:1320px}
+#baser{position:absolute;left:660px;top:0;width:660px;height:880px;background:#efe3cf;border-radius:0 6px 6px 0}
+.leaf{position:absolute;left:660px;top:0;width:660px;height:880px;transform-origin:0 50%;transform-style:preserve-3d;transition:transform .9s cubic-bezier(.5,.08,.2,1)}
+.leaf.cv{top:-12px;height:904px;width:676px;transition-duration:2s}
+.face{position:absolute;inset:0;backface-visibility:hidden;-webkit-backface-visibility:hidden;overflow:hidden}
+.face.bk{transform:rotateY(180deg)}
+.pg{background:#fffaf0 radial-gradient(rgba(150,110,80,.07) 1px,transparent 1.2px) 0 0/5px 5px}
+.pg::after{content:"";position:absolute;inset:0;pointer-events:none}
+.pg.r::after{background:linear-gradient(to right,rgba(80,50,30,.3),transparent 9%)}
+.pg.l::after{background:linear-gradient(to left,rgba(80,50,30,.3),transparent 9%)}
+.pol{position:absolute;background:#fff;padding:14px 14px 58px;box-shadow:0 10px 22px rgba(80,50,40,.25),0 1px 2px rgba(0,0,0,.25);cursor:pointer}
+.pol::before{content:"";position:absolute;top:-16px;left:50%;width:120px;height:34px;margin-left:-60px;background:rgba(238,108,77,.38);transform:rotate(-3deg)}
+.ph{width:100%;height:100%;background-size:cover;background-position:center;display:grid;place-items:center;text-align:center;line-height:1.6;font:22px/1.6 Yomogi,sans-serif;color:rgba(29,42,99,.5)}
+.cap{position:absolute;left:14px;right:14px;bottom:13px;text-align:center;font:27px Yomogi,sans-serif;color:#3b3f78}
+.pn{position:absolute;bottom:28px;font:italic 26px "Cormorant Garamond",serif;color:#b59f8a}
+.pg.r .pn{right:46px}.pg.l .pn{left:46px}
+.ep{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:26px;color:var(--ink);text-align:center}
+.ep .big{font:italic 500 84px "Cormorant Garamond",serif}.ep .jp{font-size:34px;letter-spacing:.3em}.ep .yo{font:34px Yomogi,sans-serif}
+.cov{position:absolute;inset:0;border-radius:6px 18px 18px 6px;overflow:hidden;
+ background:repeating-linear-gradient(45deg,rgba(255,255,255,.045) 0 2px,transparent 2px 5px),repeating-linear-gradient(-45deg,rgba(0,0,0,.09) 0 2px,transparent 2px 5px),linear-gradient(135deg,#2e3f8c,#16204e);box-shadow:inset 0 0 0 2px rgba(255,255,255,.06),inset 30px 0 40px -20px rgba(0,0,0,.5)}
+.cov::after{content:"";position:absolute;inset:0;background:linear-gradient(105deg,transparent 35%,rgba(255,255,255,.15) 50%,transparent 65%) 100% 0/300% 100%;animation:sheen 6s ease-in-out infinite}
+@keyframes sheen{0%{background-position:100% 0}60%,100%{background-position:-100% 0}}
+.frm{position:absolute;inset:36px;border:2px solid rgba(240,200,120,.75)}.frm::after{content:"";position:absolute;inset:9px;border:1px solid rgba(240,200,120,.45)}
+.foil{background:linear-gradient(120deg,#f6dc98,#c8922f 30%,#fbe9b0 50%,#b98228 70%,#f1d283) 0 0/250% 100%;-webkit-background-clip:text;background-clip:text;color:transparent;animation:foil 5s linear infinite}
+@keyframes foil{to{background-position:-250% 0}}
+.cov .vt{position:absolute;right:120px;top:130px;writing-mode:vertical-rl;font:600 170px/1 "Shippori Mincho",serif;letter-spacing:.12em}
+.cov .yr{position:absolute;left:84px;top:140px;font:italic 500 60px "Cormorant Garamond",serif;letter-spacing:.12em}
+.cov .sb{position:absolute;left:84px;bottom:100px;font:italic 500 54px "Cormorant Garamond",serif}
+#flash{position:absolute;inset:0;z-index:7;background:radial-gradient(circle,#fffefa,#fff0dc);opacity:0;pointer-events:none;transition:opacity 1.6s}
+#flash.on{opacity:1;transition-duration:.7s}
+#hud{position:absolute;inset:0;z-index:8;pointer-events:none;opacity:0;transition:opacity 1.2s;color:var(--ink)}
+.ui #hud{opacity:1}
+#ttl{position:absolute;left:56px;top:44px;font:600 40px "Shippori Mincho",serif;letter-spacing:.2em}
+#again{position:absolute;right:56px;top:40px;pointer-events:auto;cursor:pointer;border:2px solid var(--coral);background:rgba(255,250,240,.8);color:var(--ink);border-radius:40px;padding:10px 30px;font:600 28px "Shippori Mincho",serif}
+.nb{position:absolute;top:50%;margin-top:-48px;width:96px;height:96px;border-radius:50%;border:2px solid var(--coral);background:rgba(255,250,240,.85);color:var(--ink);font-size:54px;line-height:1;pointer-events:auto;cursor:pointer;box-shadow:0 8px 20px rgba(238,108,77,.2)}
+#prev{left:44px}#next{right:44px}
+#cnt{position:absolute;left:0;right:0;bottom:30px;text-align:center;font:italic 500 38px "Cormorant Garamond",serif}
+#tip{position:absolute;left:0;right:0;bottom:78px;text-align:center;font:26px Yomogi,sans-serif;opacity:.6}
+@keyframes push{from{transform:rotateX(4deg) scale(1.15)}to{transform:rotateX(2deg) scale(1.23)}}
+#album.main #cam2{animation:push 7s ease-out both}
+#bulk{position:absolute;right:56px;top:112px;pointer-events:auto;cursor:pointer;border:2px solid var(--coral);background:rgba(255,250,240,.8);color:var(--ink);border-radius:40px;padding:8px 26px;font:600 24px "Shippori Mincho",serif}
+#movie{position:absolute;inset:0;z-index:6;opacity:0;pointer-events:none;transition:opacity 1s}
+.movie #movie{opacity:1;pointer-events:auto}
+.movie #album{opacity:0!important;pointer-events:none!important}
+.movie .nb,.movie #cnt,.movie #tip{display:none}
+#mframe{position:absolute;left:160px;top:90px;width:1600px;height:900px;padding:16px;background:#fff;box-shadow:0 30px 60px rgba(80,50,40,.3),0 2px 4px rgba(0,0,0,.2)}
+#mframe::before{content:"";position:absolute;top:-18px;left:50%;width:180px;height:38px;margin-left:-90px;background:rgba(238,108,77,.4);transform:rotate(-2deg);z-index:1}
+#mbox{position:relative;width:100%;height:100%;background:linear-gradient(135deg,#ffd3c4,#cfe4ff)}
+#mph{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:30px;color:var(--ink);font:600 46px "Shippori Mincho",serif;letter-spacing:.2em;text-align:center}
+#mph small{font:26px Yomogi,sans-serif;letter-spacing:.1em;opacity:.7}
+#mph div{display:flex;gap:24px}
+#pick,#exp,#mph button{pointer-events:auto;cursor:pointer;border:2px solid var(--coral);background:rgba(255,250,240,.85);color:var(--ink);border-radius:40px;padding:8px 26px;font:600 24px "Shippori Mincho",serif}
+#mph button{font-size:28px;padding:12px 34px}
+#pick,#exp{position:absolute;right:56px}#pick{top:176px}#exp{top:240px}
+.rec #hud{display:none}
+#toast{position:absolute;left:0;right:0;bottom:130px;text-align:center;z-index:9;font:28px Yomogi,sans-serif;color:var(--ink);opacity:0;transition:opacity .5s;pointer-events:none}
+#toast.on{opacity:1}
+@media (prefers-reduced-motion:reduce){.play #cam{animation:none}}
+</style>
+</head>
+<body>
+<div id="fit"><div id="stage">
+ <div id="fade" style="position:absolute;inset:0">
+  <div id="cam">
+   <canvas id="dust" width="1920" height="1080"></canvas>
+   <svg viewBox="0 0 1920 1080">
+    <circle class="ring" cx="960" cy="540" r="525" transform="rotate(-100 960 540)"/>
+    <g id="g"></g>
+   </svg>
+  </div>
+ </div>
+ <div id="album"><div id="fl"><div id="cam2"><div id="book"><div id="shadow"></div><div id="baser"></div></div></div></div></div>
+ <div id="flash"></div>
+ <div id="movie"><div id="mframe"><div id="mbox"><div id="mph">ここにメインmovieが流れます<small>写真は、アルバムの中に後から追加できます</small><div><button id="mpick">動画を選ぶ</button><button id="mback">アルバムに戻る</button></div></div></div></div></div>
+ <div id="toast"></div>
+ <div id="hud"><div id="ttl">桐榮祭 2026</div><button id="again">はじめから</button><button id="bulk">写真をまとめて入れる</button><button id="pick">main movieを選ぶ</button><button id="exp">mp4に書き出す</button><button class="nb" id="prev" aria-label="前へ">‹</button><button class="nb" id="next" aria-label="次へ">›</button><div id="tip">写真をタップして追加できます</div><div id="cnt"></div></div>
+ <input type="file" id="file" accept="image/*" hidden><input type="file" id="files" accept="image/*" multiple hidden><input type="file" id="mfile" accept="video/*" hidden>
+ <div id="hint" class="msg"></div>
+ <div id="start" class="msg">タップして再生<small>♪ 音が出ます</small></div>
+</div></div>
+<script>
+const NS="http://www.w3.org/2000/svg",stage=document.getElementById("stage"),fit=document.getElementById("fit"),
+      g=document.getElementById("g"),hint=document.getElementById("hint"),startEl=document.getElementById("start");
+function resize(){
+  const s=Math.min(innerWidth/1920,innerHeight/1080);
+  fit.style.left=(innerWidth-1920*s)/2+"px"; fit.style.top=(innerHeight-1080*s)/2+"px";
+  fit.style.transform=`scale(${s})`;
+}
+addEventListener("resize",resize);resize();
+
+/* ---------- 文字 ---------- */
+let SCHED=[];
+function line(text,o){
+  const items=[...text].map(c=>{
+    const e=document.createElementNS(NS,"text");
+    e.textContent=c;e.setAttribute("font-size",o.size);e.setAttribute("class","ch "+o.cls);e.setAttribute("stroke-width",o.sw);
+    g.appendChild(e);
+    return {e,c,w:c===" "?o.size*.3:e.getComputedTextLength()};
+  });
+  const total=items.reduce((a,b)=>a+b.w,0)+o.track*(items.length-1);
+  let x=960-total/2;
+  items.forEach((it,i)=>{
+    if(it.c===" "){it.e.remove()}else{
+      const t=o.t0+i*o.step;
+      it.e.setAttribute("x",x);it.e.setAttribute("y",o.y+(o.jit?(Math.random()-.5)*o.jit:0));
+      it.e.style.setProperty("--t",t+"s");it.e.style.setProperty("--d",o.dur+"s");
+      SCHED.push({k:"s",t,d:o.dur*.9},{k:"n",t:t+o.dur*.9,oct:o.oct,i});
+    }
+    x+=it.w+o.track;
+  });
+}
+function rule(x,y,w,t,d){
+  const r=document.createElementNS(NS,"rect");
+  r.setAttribute("class","rule");r.setAttribute("x",x-w/2);r.setAttribute("y",y);r.setAttribute("width",w);r.setAttribute("height",3);
+  r.style.setProperty("--t",t+"s");r.style.setProperty("--d",d+"s");g.appendChild(r);
+  SCHED.push({k:"w",t,d});
+}
+function build(){
+  g.innerHTML="";SCHED=[];
+  line("桐榮祭",{cls:"jp",size:300,y:650,t0:1.2,step:.9,dur:2.0,sw:2.5,track:50,oct:.5});
+  rule(960,725,860,4.4,1.6);
+  line("2026",{cls:"en",size:96,y:310,t0:5.2,step:.3,dur:1.0,sw:1.6,track:44,jit:6,oct:1});
+  rule(640,270,200,5.0,1.2);rule(1280,270,200,5.0,1.2);
+  line("The Memoryies",{cls:"en",size:120,y:880,t0:6.4,step:.28,dur:1.0,sw:1.6,track:6,jit:8,oct:1});
+}
+
+/* ---------- 色とりどりの光 ---------- */
+const cv=document.getElementById("dust"),cx=cv.getContext("2d");
+const COL=[[255,150,120],[255,165,200],[140,195,255],[255,205,110],[190,170,255]];
+let P=[],T0=0;
+function seed(){
+  P=Array.from({length:60},()=>({x:Math.random()*1920,y:Math.random()*1200,r:6+Math.random()*Math.random()*46,
+    v:10+Math.random()*28,a:.18+Math.random()*.4,ph:Math.random()*6.28,c:COL[Math.floor(Math.random()*COL.length)]}));
+}
+function tick(now){
+  const t=(now-T0)/1000;cx.clearRect(0,0,1920,1080);
+  const env=Math.min(1,t/1.5)*(t>14.1?Math.max(0,1-(t-14.1)/.9):1);
+  for(const p of P){
+    const y=((p.y-p.v*t)%1200+1200)%1200-60,x=p.x+Math.sin(t*.4+p.ph)*30;
+    const a=p.a*env*(.65+.35*Math.sin(t*1.2+p.ph)),[r,gg,b]=p.c;
+    const gr=cx.createRadialGradient(x,y,0,x,y,p.r);
+    gr.addColorStop(0,`rgba(${r},${gg},${b},${a})`);gr.addColorStop(.7,`rgba(${r},${gg},${b},${a*.5})`);gr.addColorStop(1,`rgba(${r},${gg},${b},0)`);
+    cx.fillStyle=gr;cx.beginPath();cx.arc(x,y,p.r,0,6.283);cx.fill();
+  }
+  if(t<16)requestAnimationFrame(tick);
+}
+
+/* ---------- 音 (Web Audio で合成) ---------- */
+let AC,master,bus,NB;
+const SCALE=[523.25,587.33,659.25,783.99,880,1046.5];
+function audioInit(){
+  if(AC)return;
+  AC=new(window.AudioContext||window.webkitAudioContext)();
+  master=AC.createGain();const cp=AC.createDynamicsCompressor();cp.threshold.value=-20;cp.ratio.value=3;master.connect(cp);cp.connect(AC.destination);window.CP=cp;window.REC=AC.createMediaStreamDestination();cp.connect(window.REC);
+  bus=AC.createGain();bus.connect(master);
+  const len=AC.sampleRate*4.8,ib=AC.createBuffer(2,len,AC.sampleRate);
+  for(let c=0;c<2;c++){const d=ib.getChannelData(c);for(let i=0;i<len;i++)d[i]=(Math.random()*2-1)*Math.pow(1-i/len,2.0);}
+  const cv2=AC.createConvolver();cv2.buffer=ib;const vg=AC.createGain();vg.gain.value=.85;
+  bus.connect(cv2);cv2.connect(vg);vg.connect(master);
+  NB=AC.createBuffer(1,AC.sampleRate,AC.sampleRate);
+  const nd=NB.getChannelData(0);for(let i=0;i<nd.length;i++)nd[i]=Math.random()*2-1;
+}
+function tone(f,t,dur,vol){
+  const o=AC.createOscillator(),gn=AC.createGain();o.frequency.value=f;
+  gn.gain.setValueAtTime(0,t);gn.gain.linearRampToValueAtTime(vol,t+.008);gn.gain.exponentialRampToValueAtTime(.0001,t+dur);
+  o.connect(gn);gn.connect(bus);o.start(t);o.stop(t+dur+.05);
+}
+function bell(f,t,v){tone(f,t,2.4,v);tone(f*2.01,t,1.3,v*.35);tone(f*3.99,t,.6,v*.12);}
+function pad(notes,t,dur){
+  notes.forEach(f=>[-5,5].forEach(dt=>{
+    const o=AC.createOscillator(),lp=AC.createBiquadFilter(),gn=AC.createGain();
+    o.type="triangle";o.frequency.value=f;o.detune.value=dt;lp.type="lowpass";lp.frequency.value=1500;
+    gn.gain.setValueAtTime(0,t);gn.gain.linearRampToValueAtTime(.03,t+1.2);gn.gain.linearRampToValueAtTime(0,t+dur+1.2);
+    o.connect(lp);lp.connect(gn);gn.connect(bus);o.start(t);o.stop(t+dur+1.3);
+  }));
+}
+function noise(t,d,type,f0,f1,vol,bumps){
+  const s=AC.createBufferSource();s.buffer=NB;s.loop=true;
+  const fl=AC.createBiquadFilter();fl.type=type;fl.Q.value=1.3;
+  fl.frequency.setValueAtTime(f0,t);fl.frequency.linearRampToValueAtTime(f1,t+d);
+  const gn=AC.createGain(),c=new Float32Array(bumps);
+  for(let i=1;i<bumps-1;i++)c[i]=vol*(.5+Math.random()*.7);
+  gn.gain.setValueCurveAtTime(c,t,d);
+  s.connect(fl);fl.connect(gn);gn.connect(bus);s.start(t);s.stop(t+d);
+}
+function schedAudio(){
+  const t=AC.currentTime+.2;
+  master.gain.cancelScheduledValues(0);master.gain.setValueAtTime(0,t);
+  master.gain.linearRampToValueAtTime(.9,t+1.5);master.gain.setValueAtTime(.9,t+14.1);master.gain.linearRampToValueAtTime(0,t+15);
+  [[261.63,329.63,392,493.88],[220,261.63,329.63,392],[174.61,261.63,329.63,440],[196,246.94,293.66,392]]
+    .forEach((n,i)=>pad(n,t+i*3.7,3.7));
+  bell(130.81,t+1.0,.14);
+  SCHED.forEach(s=>{
+    if(s.k==="s")noise(t+s.t,s.d,"bandpass",2400,5200,.05,12);
+    else if(s.k==="w")noise(t+s.t,s.d,"bandpass",500,2600,.045,8);
+    else bell(SCALE[(s.i*2+1)%SCALE.length]*s.oct,t+s.t,.07);
+  });
+  [1046.5,1318.5,1568,1975.5,2093].forEach((f,i)=>bell(f,t+11+i*.14,.05));
+  bell(261.63,t+11,.1);
+}
+
+/* ---------- 映画風サウンド ---------- */
+function pluck(f,t,v,d){
+  d=d||2.4;
+  const o=AC.createOscillator(),o2=AC.createOscillator(),lp=AC.createBiquadFilter(),gn=AC.createGain();
+  o.type="triangle";o.frequency.value=f;o2.type="sine";o2.frequency.value=f*2;
+  lp.type="lowpass";lp.frequency.setValueAtTime(3400,t);lp.frequency.exponentialRampToValueAtTime(500,t+d*.6);
+  gn.gain.setValueAtTime(0,t);gn.gain.linearRampToValueAtTime(v,t+.006);gn.gain.exponentialRampToValueAtTime(.0001,t+d);
+  o.connect(lp);o2.connect(lp);lp.connect(gn);gn.connect(bus);o.start(t);o2.start(t);o.stop(t+d+.05);o2.stop(t+d+.05);
+}
+function strings(notes,t,dur,v){
+  notes.forEach(f=>[-9,0,9].forEach(dt=>{
+    const o=AC.createOscillator(),lp=AC.createBiquadFilter(),gn=AC.createGain();
+    o.type="sawtooth";o.frequency.value=f;o.detune.value=dt;
+    lp.type="lowpass";lp.frequency.setValueAtTime(320,t);lp.frequency.linearRampToValueAtTime(1500,t+dur*.8);
+    gn.gain.setValueAtTime(0,t);gn.gain.linearRampToValueAtTime(v,t+dur*.6);gn.gain.linearRampToValueAtTime(0,t+dur+1.6);
+    o.connect(lp);lp.connect(gn);gn.connect(bus);o.start(t);o.stop(t+dur+1.7);
+  }));
+}
+function boom(t,v){
+  const o=AC.createOscillator(),gn=AC.createGain();
+  o.frequency.setValueAtTime(95,t);o.frequency.exponentialRampToValueAtTime(32,t+1.4);
+  gn.gain.setValueAtTime(0,t);gn.gain.linearRampToValueAtTime(v,t+.015);gn.gain.exponentialRampToValueAtTime(.0001,t+2.8);
+  o.connect(gn);gn.connect(master);gn.connect(bus);o.start(t);o.stop(t+2.9);
+}
+function sweep(t,d,type,f0,f1,v0,v1){
+  const s=AC.createBufferSource();s.buffer=NB;s.loop=true;
+  const fl=AC.createBiquadFilter();fl.type=type;fl.Q.value=.9;
+  fl.frequency.setValueAtTime(f0,t);fl.frequency.exponentialRampToValueAtTime(f1,t+d);
+  const gn=AC.createGain();gn.gain.setValueAtTime(v0,t);gn.gain.exponentialRampToValueAtTime(v1,t+d);
+  s.connect(fl);fl.connect(gn);gn.connect(bus);s.start(t);s.stop(t+d+.05);
+}
+function cinema(){
+  const t=AC.currentTime+.2;
+  master.gain.cancelScheduledValues(0);master.gain.setValueAtTime(0,t);
+  master.gain.linearRampToValueAtTime(.95,t+1.2);master.gain.setValueAtTime(.95,t+14);master.gain.linearRampToValueAtTime(.8,t+15);master.gain.setValueAtTime(.8,t+25);master.gain.linearRampToValueAtTime(0,t+27.5);
+  const CH=[[110,164.81,220,261.63,329.63],[87.31,130.81,174.61,220,261.63],[65.41,130.81,196,261.63,329.63],[98,146.83,196,246.94,293.66]];
+  const AR=[[220,329.63,440,523.25,659.25],[174.61,261.63,349.23,440,523.25],[196,261.63,329.63,392,523.25],[196,246.94,293.66,392,493.88]];
+  strings([55,82.41],t,6,.012);
+  CH.forEach((n,i)=>strings(n,t+i*3.7,3.7,.0075));
+  sweep(t+.6,4.4,"bandpass",300,5200,.003,.1);
+  boom(t+5.0,.5);sweep(t+5.0,1.8,"lowpass",2200,120,.18,.0005);
+  SCHED.forEach(s=>{
+    if(s.k==="s")noise(t+s.t,s.d,"bandpass",1800,3800,.025,12);
+    else if(s.k==="w")noise(t+s.t,s.d,"bandpass",500,2600,.03,8);
+    else{const a=AR[Math.min(3,Math.floor(s.t/3.7))];pluck(a[(s.i*2)%5]*s.oct*2,t+s.t,.045,2.6);}
+  });
+  sweep(t+8.8,2.2,"highpass",3000,9000,.003,.05);
+  boom(t+11.0,.3);
+  [1174.66,1567.98,1975.5,2349.3].forEach((f,i)=>tone(f,t+11.05+i*.18,4.5,.022));
+  [392,493.88,587.33,783.99,987.77,783.99].forEach((f,i)=>pluck(f,t+11.4+i*.5,.04,3));
+  heavy(t);albumSound(t);
+}
+
+/* ---------- 重低音 ---------- */
+let WS;
+function shaper(){
+  if(!WS){WS=AC.createWaveShaper();const c=new Float32Array(1024);
+    for(let i=0;i<1024;i++)c[i]=Math.tanh((i/512-1)*3.2);
+    WS.curve=c;const og=AC.createGain();og.gain.value=.5;WS.connect(og);og.connect(master);}
+  return WS;
+}
+function deep(t,v,f0,f1,d){
+  const o=AC.createOscillator(),gn=AC.createGain();
+  o.frequency.setValueAtTime(f0,t);o.frequency.exponentialRampToValueAtTime(f1,t+d*.5);
+  gn.gain.setValueAtTime(0,t);gn.gain.linearRampToValueAtTime(v,t+.012);gn.gain.exponentialRampToValueAtTime(.0001,t+d);
+  o.connect(gn);gn.connect(shaper());gn.connect(bus);o.start(t);o.stop(t+d+.1);
+}
+function drone(t,d,f,v){
+  const o=AC.createOscillator(),gn=AC.createGain();o.frequency.value=f;
+  gn.gain.setValueAtTime(0,t);gn.gain.linearRampToValueAtTime(v,t+d*.4);gn.gain.linearRampToValueAtTime(v*.5,t+d);gn.gain.linearRampToValueAtTime(0,t+d+2);
+  o.connect(gn);gn.connect(shaper());o.start(t);o.stop(t+d+2.1);
+}
+function braam(t,v){
+  [55,55.4,110,110.5].forEach(f=>{
+    const o=AC.createOscillator(),lp=AC.createBiquadFilter(),gn=AC.createGain();
+    o.type="sawtooth";o.frequency.value=f;lp.type="lowpass";
+    lp.frequency.setValueAtTime(120,t);lp.frequency.exponentialRampToValueAtTime(900,t+.9);lp.frequency.exponentialRampToValueAtTime(150,t+3.5);
+    gn.gain.setValueAtTime(0,t);gn.gain.linearRampToValueAtTime(v,t+.5);gn.gain.exponentialRampToValueAtTime(.0001,t+3.8);
+    o.connect(lp);lp.connect(gn);gn.connect(bus);gn.connect(master);o.start(t);o.stop(t+3.9);
+  });
+}
+function heavy(t){
+  drone(t,5,41.2,.2);drone(t+5,9.5,41.2,.14);
+  [1.2,2.1,3.0].forEach(s=>deep(t+s,.16,150,60,.5));
+  [3.2,4.1].forEach(s=>deep(t+s,.28,130,48,.9));
+  deep(t+5,.4,100,30,3);braam(t+5,.07);
+  deep(t+11,.3,100,30,3);braam(t+11,.05);
+}
+function albumSound(t){
+  const CH=[[110,164.81,220,261.63,329.63],[87.31,130.81,174.61,220,261.63],[65.41,130.81,196,261.63,329.63],[98,146.83,196,246.94,293.66]];
+  strings([55,82.41,110],t+14.2,3,.01);
+  noise(t+17,1.8,"bandpass",150,600,.07,10);deep(t+17.9,.25,90,40,1.2);
+  strings([130.81,196,261.63,329.63,392,493.88],t+17,5,.007);
+  sweep(t+21.2,1.7,"bandpass",200,6500,.003,.13);drone(t+21.2,2,36,.25);
+  deep(t+22.8,.45,100,28,3.2);sweep(t+22.8,2,"lowpass",3000,150,.2,.0005);strings(CH[0],t+22.8,3,.006);
+}
+function flipSound(){if(!AC)return;const t=AC.currentTime;noise(t,.55,"bandpass",1400,4200,.06,9);pluck(98,t+.45,.05,1.5);}
+
+/* ---------- アルバム ---------- */
+const albumEl=document.getElementById("album"),bookEl=document.getElementById("book"),flash=document.getElementById("flash"),
+      fileEl=document.getElementById("file"),cnt=document.getElementById("cnt");
+const L=4,PH=[["#ffd3c4","#ffb4c2"],["#cfe4ff","#e3d4ff"],["#ffe7b8","#ffcfa6"],["#d6f0e0","#bfe3f5"],["#ffc9d9","#ffe1c4"]];
+const PAGES=[null,
+ [[60,90,540,470,-2,"桐榮祭、はじまる"],[300,590,290,220,3,"準備のあいだに"]],
+ [[70,80,300,350,-3,"朝"],[300,330,290,230,2,"昼"],[90,570,330,250,-2,"放課後"]],
+ [[50,70,260,260,2,"笑顔"],[340,110,260,260,-3,"歓声"],[100,420,460,380,1,"みんなで一枚"]],
+ [[60,100,540,430,-1,"ステージ"],[330,550,250,250,3,"拍手"]],
+ [[70,80,280,330,-3,"片付けも思い出"],[300,300,300,300,3,"夕焼け"],[80,630,260,190,-2,"またね"]],[[40,230,580,380,-1,"いよいよ本編"]]];
+const COVER='<div class="cov"><div class="frm"></div><div class="vt foil">桐榮祭</div><div class="yr foil">2026</div><div class="sb foil">The Memoryies</div></div>';
+function pg(i){
+  if(i===0)return '<div class="ep"><div class="big">Memories</div><div class="jp">桐榮祭 2026</div></div>';
+  return PAGES[i].map(([x,y,w,h,r,c],j)=>{const a=PH[(i+j)%5];
+    return `<div class="pol" style="left:${x}px;top:${y}px;width:${w}px;height:${h}px;transform:rotate(${r}deg) scale(${i===6?1:.68})"><div class="ph${i===6?' mv':''}" style="background-image:linear-gradient(135deg,${a[0]},${a[1]})">${i===6?'▶<br>main movie':'＋<br>写真を追加'}</div></div>`;
+  }).join("")+`<div class="pn">${i}</div>`;
+}
+for(let i=0;i<L;i++){
+  const lf=document.createElement("div"),fr=document.createElement("div"),bk=document.createElement("div");
+  lf.className="leaf"+(i?"":" cv");fr.className=i?"face pg r":"face";bk.className="face bk pg l";
+  fr.innerHTML=i?pg(2*i-1):COVER;bk.innerHTML=pg(2*i);lf.append(fr,bk);bookEl.append(lf);
+}
+let k=0,ui=false,phTarget=null;
+function apply(){
+  bookEl.querySelectorAll(".leaf").forEach((lf,i)=>{const f=i<k;
+    lf.style.transform=`translateZ(${(f?i+1:L-i)*2}px) rotateY(${f?-180:0}deg)`;});
+  cnt.textContent=Math.max(k,1)+" / "+L;
+}
+function go(d){const n=Math.max(1,Math.min(L,k+d));if(!ui||n===k||stage.classList.contains("movie"))return;k=n;flipSound();apply();}
+bookEl.addEventListener("click",e=>{const ph=e.target.closest(".pol");if(ph&&ui){phTarget=ph.querySelector(".ph");fileEl.click();}});
+fileEl.addEventListener("change",()=>{const f=fileEl.files[0];if(f&&phTarget){phTarget.style.backgroundImage=`url(${URL.createObjectURL(f)})`;phTarget.textContent="";}fileEl.value="";});
+document.getElementById("prev").onclick=()=>go(-1);
+const filesEl=document.getElementById("files");
+document.getElementById("bulk").onclick=()=>filesEl.click();
+filesEl.addEventListener("change",()=>{
+  const phs=[...bookEl.querySelectorAll(".ph:not(.mv)")];let j=0;
+  [...filesEl.files].forEach(f=>{
+    while(j<phs.length&&phs[j].textContent==="")j++;
+    if(j<phs.length){phs[j].style.backgroundImage=`url(${URL.createObjectURL(f)})`;phs[j].textContent="";j++;}
+  });filesEl.value="";
+});
+document.getElementById("next").onclick=()=>go(1);
+document.getElementById("again").onclick=()=>{if(AC){AC.close();AC=null;WS=null;}audioInit();AC.resume();play();};
+addEventListener("keydown",e=>{if(e.key==="ArrowRight")go(1);if(e.key==="ArrowLeft")go(-1);});
+/* ---------- main movie ---------- */
+const mph=document.getElementById("mph"),mbox=document.getElementById("mbox"),mfile=document.getElementById("mfile"),toastEl=document.getElementById("toast");
+let movieURL=null,mv=null,exporting=null,tt;
+function toast(m){toastEl.textContent=m;toastEl.classList.add("on");clearTimeout(tt);tt=setTimeout(()=>toastEl.classList.remove("on"),5000);}
+function mountMovie(){
+  mbox.querySelectorAll("video").forEach(v=>{v.pause();v.remove();});mv=null;
+  if(!movieURL){mph.style.display="";return;}
+  mph.style.display="none";
+  mv=document.createElement("video");mv.src=movieURL;mv.playsInline=true;
+  mv.style.cssText="position:absolute;inset:0;width:100%;height:100%;object-fit:contain;background:#111";
+  mbox.prepend(mv);
+  if(AC&&window.CP){try{AC.createMediaElementSource(mv).connect(window.CP);}catch(e){}}
+  mv.addEventListener("ended",exitMovie);
+  mv.addEventListener("click",()=>stage.classList.toggle("ui"));
+}
+function enterMovie(){
+  stage.classList.add("movie");stage.classList.remove("ui");ui=true;mountMovie();
+  if(mv)mv.play().catch(()=>stage.classList.add("ui"));
+  else{stage.classList.add("ui");if(exporting)setTimeout(finishExport,3000);}
+}
+function exitMovie(){
+  if(mv)mv.pause();
+  stage.classList.remove("movie");stage.classList.add("ui");ui=true;
+  if(exporting)setTimeout(finishExport,1200);
+}
+document.getElementById("pick").onclick=document.getElementById("mpick").onclick=()=>mfile.click();
+document.getElementById("mback").onclick=exitMovie;
+mfile.addEventListener("change",()=>{
+  const f=mfile.files[0];if(!f)return;
+  if(movieURL)URL.revokeObjectURL(movieURL);movieURL=URL.createObjectURL(f);mfile.value="";
+  if(ui||stage.classList.contains("movie")){enterMovie();toast("動画をセットしました");}
+  else toast("動画をセットしました（アルバムのあとに再生されます）");
+});
+/* ---------- mp4 書き出し (画面+音声を録画) ---------- */
+async function exportVideo(){
+  if(exporting)return;
+  const mt=window.MediaRecorder&&["video/mp4;codecs=avc1.42E01E,mp4a.40.2","video/mp4","video/webm;codecs=vp9,opus","video/webm"].find(t=>MediaRecorder.isTypeSupported(t));
+  if(!mt||!navigator.mediaDevices||!navigator.mediaDevices.getDisplayMedia){toast("このブラウザでは書き出せません。PCのChromeか、Blender版をお使いください");return;}
+  let vs;
+  try{vs=await navigator.mediaDevices.getDisplayMedia({video:{frameRate:30},audio:false,preferCurrentTab:true,selfBrowserSurface:"include"});}
+  catch(e){toast("画面の共有が許可されませんでした。ページを単独のタブで開いて、もう一度お試しください");return;}
+  const vt=vs.getVideoTracks()[0];
+  try{if(window.CropTarget&&vt.cropTo)await vt.cropTo(await CropTarget.fromElement(fit));}catch(e){}
+  if(AC){AC.close();AC=null;WS=null;}audioInit();AC.resume();
+  const rec=new MediaRecorder(new MediaStream([vt,...window.REC.stream.getAudioTracks()]),{mimeType:mt,videoBitsPerSecond:12e6}),chunks=[];
+  rec.ondataavailable=e=>{if(e.data.size)chunks.push(e.data);};
+  rec.onstop=()=>{
+    vs.getTracks().forEach(t=>t.stop());const ext=mt.includes("mp4")?"mp4":"webm";
+    const a=document.createElement("a");a.href=URL.createObjectURL(new Blob(chunks,{type:mt}));a.download="kiritoh_movie."+ext;a.click();
+    stage.classList.remove("rec");exporting=null;
+    toast(ext==="mp4"?"mp4を保存しました":"このブラウザはmp4に非対応のため、webmで保存しました");
+  };
+  exporting={rec};stage.classList.add("rec");rec.start(1000);play();
+}
+function finishExport(){if(exporting&&exporting.rec.state==="recording")exporting.rec.stop();}
+document.getElementById("exp").onclick=exportVideo;
+
+let sx=null;
+albumEl.addEventListener("pointerdown",e=>{sx=e.clientX;});
+albumEl.addEventListener("pointerup",e=>{if(sx!==null&&Math.abs(e.clientX-sx)>60)go(e.clientX<sx?1:-1);sx=null;});
+let AT=[];const at=(s,f)=>AT.push(setTimeout(f,s*1000));
+function albumSeq(){
+  AT.forEach(clearTimeout);AT=[];
+  albumEl.className="";stage.classList.remove("ui","movie");flash.classList.remove("on");ui=false;k=0;apply();
+  if(mv)mv.pause();
+  at(14.2,()=>albumEl.classList.add("show"));
+  at(17,()=>{k=1;apply();albumEl.classList.add("open");});
+  at(18.8,()=>{k=2;apply();flipSound();});
+  at(19.6,()=>{k=3;apply();flipSound();});
+  at(20.4,()=>{k=4;apply();flipSound();});
+  at(21.4,()=>albumEl.classList.add("dive"));
+  at(22.7,()=>flash.classList.add("on"));
+  at(23.4,()=>{albumEl.classList.add("snap");albumEl.classList.remove("dive");albumEl.classList.add("main");void albumEl.offsetWidth;albumEl.classList.remove("snap");flash.classList.remove("on");enterMovie();});
+}
+
+/* ---------- 再生 ---------- */
+let timer;
+function play(){
+  clearTimeout(timer);hint.classList.remove("on");
+  stage.classList.remove("play");build();seed();void stage.offsetWidth;
+  AT.forEach(clearTimeout);AT=[];albumEl.className="";stage.classList.remove("ui","movie");
+  timer=setTimeout(()=>{
+    if(AC)cinema();
+    requestAnimationFrame(()=>{stage.classList.add("play");T0=performance.now();requestAnimationFrame(tick);albumSeq();});
+  },500);
+}
+const ready=Promise.race([
+  Promise.all([document.fonts.load('600 300px "Shippori Mincho"',"桐榮祭"),
+               document.fonts.load('italic 500 100px "Cormorant Garamond"',"2026The Memoryies")]),
+  new Promise(r=>setTimeout(r,3500))
+]);
+startEl.addEventListener("click",async()=>{
+  audioInit();AC.resume();startEl.classList.add("gone");await ready;play();
+});
+stage.addEventListener("click",()=>{if(hint.classList.contains("on"))play();});
+</script>
+</body>
+</html>
