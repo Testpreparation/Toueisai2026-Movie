@@ -1,0 +1,689 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>桐榮祭 2026 The Memoryies</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Shippori+Mincho:wght@600&family=Cormorant+Garamond:ital,wght@1,500&family=Yomogi&display=swap" rel="stylesheet">
+<style>
+:root{--paper:#fff8ee;--ink:#1d2a63;--coral:#ee6c4d;color-scheme:light}
+*{box-sizing:border-box}
+html,body{height:100%;margin:0;background:var(--paper);overflow:hidden;-webkit-tap-highlight-color:transparent}
+#fit{position:absolute;width:1920px;height:1080px;transform-origin:0 0}
+#stage{position:absolute;inset:0;overflow:hidden;cursor:pointer;
+ background:radial-gradient(ellipse 55% 65% at 50% 45%,#fffefa 0%,#fff3e4 45%,#ffdcd2 85%,#ffcfd6 100%)}
+#cam{position:absolute;inset:0;transform-origin:50% 48%}
+canvas{position:absolute;inset:0}
+svg{position:absolute;inset:0;width:1920px;height:1080px;overflow:visible}
+.ch{fill:var(--ink);fill-opacity:0;stroke:var(--coral);stroke-linejoin:round;stroke-linecap:round;stroke-dasharray:2600;stroke-dashoffset:2600;
+ filter:drop-shadow(0 6px 14px rgba(238,108,77,.28))}
+.jp{font-family:"Shippori Mincho","Yu Mincho","Hiragino Mincho ProN",serif;font-weight:600}
+.en{font-family:"Cormorant Garamond","Georgia",serif;font-style:italic;font-weight:500}
+.ring{fill:none;stroke:var(--coral);stroke-width:2.5;stroke-opacity:.4;stroke-dasharray:3300;stroke-dashoffset:3300;stroke-linecap:round}
+.rule{fill:var(--coral);transform-box:fill-box;transform-origin:center;transform:scaleX(0)}
+@keyframes draw{to{stroke-dashoffset:0}}
+@keyframes fillin{to{fill-opacity:1}}
+@keyframes rise{from{transform:translateY(28px)}to{transform:none}}
+@keyframes grow{to{transform:scaleX(1)}}
+@keyframes zoom{from{transform:scale(1)}to{transform:scale(1.07)}}
+@keyframes out{to{opacity:0}}
+.play #cam{animation:zoom 15s ease-in-out both}
+.play #fade{animation:out .9s ease-in 14.1s both}
+.play .ch{animation:
+  draw var(--d) cubic-bezier(.55,.05,.3,1) var(--t) both,
+  fillin 1.2s ease calc(var(--t) + var(--d) * .55) both,
+  rise calc(var(--d) + .5s) cubic-bezier(.2,.7,.2,1) var(--t) both}
+.play .ring{animation:draw 6s cubic-bezier(.5,0,.2,1) .4s both}
+.play .rule{animation:grow var(--d) cubic-bezier(.6,0,.2,1) var(--t) both}
+.msg{position:absolute;left:0;right:0;text-align:center;color:var(--ink);font:600 34px "Shippori Mincho","Yu Mincho",serif;letter-spacing:.25em}
+#hint{bottom:60px;opacity:0;transition:opacity .8s;font-size:28px}
+#hint.on{opacity:.65}
+#start{inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:28px;background:rgba(255,248,238,.55);backdrop-filter:blur(6px);transition:opacity .6s;font-size:64px}
+#start small{font-size:30px;opacity:.6;letter-spacing:.15em}
+#start.gone{opacity:0;pointer-events:none}
+#start{z-index:20}
+#album{position:absolute;inset:0;perspective:2600px;opacity:0;pointer-events:none;transition:opacity 1.6s ease;z-index:5}
+#album.show{opacity:1}#album.main{pointer-events:auto}
+#fl,#cam2,#book{transform-style:preserve-3d}
+#fl{position:absolute;inset:0;animation:float 7s ease-in-out infinite}
+#album.main #fl{animation:none}
+@keyframes float{0%,100%{transform:translateY(0)}50%{transform:translateY(-14px) rotateZ(.4deg)}}
+#cam2{position:absolute;left:50%;top:50%;width:0;height:0;transform:rotateX(26deg) rotateY(-30deg) scale(.8);transition:transform 2.4s cubic-bezier(.45,.05,.2,1)}
+#album.open #cam2{transform:rotateX(4deg) scale(1.15)}
+#album.dive #cam2{transform:translateX(-990px) scale(3);transition:transform 1.5s cubic-bezier(.6,0,.9,.5)}
+#album.snap #cam2,#album.snap #book,#album.snap .leaf,#album.snap #shadow{transition:none!important}
+#book{position:absolute;left:-660px;top:-440px;width:1320px;height:880px;transform:translateX(-330px);transition:transform 2.2s cubic-bezier(.45,.05,.2,1)}
+#album.open #book{transform:none}
+#shadow{position:absolute;left:660px;top:30px;width:660px;height:880px;background:rgba(70,40,50,.38);filter:blur(36px);transform:translate3d(0,40px,-60px);transition:all 2.2s cubic-bezier(.45,.05,.2,1)}
+#album.open #shadow{left:0;width:1320px}
+#baser{position:absolute;left:660px;top:0;width:660px;height:880px;border-radius:0 6px 6px 0;overflow:hidden}
+.leaf{position:absolute;left:660px;top:0;width:660px;height:880px;transform-origin:0 50%;transform-style:preserve-3d;transition:transform 1.25s cubic-bezier(.5,.08,.2,1)}
+.leaf.cv{top:-12px;height:904px;width:676px;transition-duration:2s}
+.face{position:absolute;inset:0;backface-visibility:hidden;-webkit-backface-visibility:hidden;overflow:hidden}
+.face.bk{transform:rotateY(180deg)}
+.pg{background:#fffaf0 radial-gradient(rgba(150,110,80,.07) 1px,transparent 1.2px) 0 0/5px 5px}
+.pg::after{content:"";position:absolute;inset:0;pointer-events:none}
+.pg.r::after{background:linear-gradient(to right,rgba(80,50,30,.3),transparent 9%)}
+.pg.l::after{background:linear-gradient(to left,rgba(80,50,30,.3),transparent 9%)}
+.pol{position:absolute;background:#fff;padding:14px 14px 58px;box-shadow:0 10px 22px rgba(80,50,40,.25),0 1px 2px rgba(0,0,0,.25);cursor:pointer}
+.pol::before{content:"";position:absolute;top:-16px;left:50%;width:120px;height:34px;margin-left:-60px;background:rgba(238,108,77,.38);transform:rotate(-3deg)}
+.ph{width:100%;height:100%;background-size:cover;background-position:center;display:grid;place-items:center;text-align:center;line-height:1.6;font:22px/1.6 Yomogi,sans-serif;color:rgba(29,42,99,.5)}
+.cap{position:absolute;left:14px;right:14px;bottom:13px;text-align:center;font:27px Yomogi,sans-serif;color:#3b3f78}
+.pn{position:absolute;bottom:28px;font:italic 26px "Cormorant Garamond",serif;color:#b59f8a}
+.pg.r .pn{right:46px}.pg.l .pn{left:46px}
+.ep{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:26px;color:var(--ink);text-align:center}
+.ep .big{font:italic 500 84px "Cormorant Garamond",serif}.ep .jp{font-size:34px;letter-spacing:.3em}.ep .yo{font:34px Yomogi,sans-serif}
+.cov{position:absolute;inset:0;border-radius:6px 18px 18px 6px;overflow:hidden;
+ background:repeating-linear-gradient(45deg,rgba(255,255,255,.045) 0 2px,transparent 2px 5px),repeating-linear-gradient(-45deg,rgba(0,0,0,.09) 0 2px,transparent 2px 5px),linear-gradient(135deg,#2e3f8c,#16204e);box-shadow:inset 0 0 0 2px rgba(255,255,255,.06),inset 30px 0 40px -20px rgba(0,0,0,.5)}
+.cov::after{content:"";position:absolute;inset:0;background:linear-gradient(105deg,transparent 35%,rgba(255,255,255,.15) 50%,transparent 65%) 100% 0/300% 100%;animation:sheen 6s ease-in-out infinite}
+@keyframes sheen{0%{background-position:100% 0}60%,100%{background-position:-100% 0}}
+.frm{position:absolute;inset:36px;border:2px solid rgba(240,200,120,.75)}.frm::after{content:"";position:absolute;inset:9px;border:1px solid rgba(240,200,120,.45)}
+.foil{background:linear-gradient(120deg,#f6dc98,#c8922f 30%,#fbe9b0 50%,#b98228 70%,#f1d283) 0 0/250% 100%;-webkit-background-clip:text;background-clip:text;color:transparent;animation:foil 5s linear infinite}
+@keyframes foil{to{background-position:-250% 0}}
+.cov .vt{position:absolute;right:120px;top:130px;writing-mode:vertical-rl;font:600 170px/1 "Shippori Mincho",serif;letter-spacing:.12em}
+.cov .yr{position:absolute;left:84px;top:140px;font:italic 500 60px "Cormorant Garamond",serif;letter-spacing:.12em}
+.cov .sb{position:absolute;left:84px;bottom:100px;font:italic 500 54px "Cormorant Garamond",serif}
+#main{position:absolute;inset:0;z-index:6;opacity:0;pointer-events:none;transition:opacity .8s;color:var(--ink);
+ background:#fffaf0 radial-gradient(rgba(150,110,80,.07) 1px,transparent 1.2px) 0 0/5px 5px}
+#main.on{opacity:1;pointer-events:auto}
+#main .stub{position:absolute;inset:0;display:grid;place-items:center;font:600 30px "Shippori Mincho",serif;letter-spacing:.3em;opacity:.28}
+#flash{position:absolute;inset:0;z-index:7;background:radial-gradient(circle,#fffefa,#fff0dc);opacity:0;pointer-events:none;transition:opacity 1.6s}
+#flash.on{opacity:1;transition-duration:.7s}
+#hud{position:absolute;inset:0;z-index:8;pointer-events:none;opacity:0;transition:opacity 1.2s;color:var(--ink)}
+.ui #hud{opacity:1}
+#ttl{position:absolute;left:56px;top:44px;font:600 40px "Shippori Mincho",serif;letter-spacing:.2em}
+#again{position:absolute;right:56px;top:40px;pointer-events:auto;cursor:pointer;border:2px solid var(--coral);background:rgba(255,250,240,.8);color:var(--ink);border-radius:40px;padding:10px 30px;font:600 28px "Shippori Mincho",serif}
+.hudbtn{position:absolute;top:42px;pointer-events:auto;cursor:pointer;border:2px solid var(--coral);background:rgba(255,250,240,.9);color:var(--ink);border-radius:40px;padding:10px 24px;font:600 24px "Shippori Mincho",serif}#addPhoto{right:310px}#exportVideo{right:560px}
+.nb{position:absolute;top:50%;margin-top:-48px;width:96px;height:96px;border-radius:50%;border:2px solid var(--coral);background:rgba(255,250,240,.85);color:var(--ink);font-size:54px;line-height:1;pointer-events:auto;cursor:pointer;box-shadow:0 8px 20px rgba(238,108,77,.2)}
+#prev{left:44px}#next{right:44px}
+#cnt{position:absolute;left:0;right:0;bottom:30px;text-align:center;font:italic 500 38px "Cormorant Garamond",serif}
+#tip{position:absolute;left:0;right:0;bottom:78px;text-align:center;font:26px Yomogi,sans-serif;opacity:.6}
+@media (prefers-reduced-motion:reduce){.play #cam{animation:none}}
+</style>
+</head>
+<body>
+<div id="fit"><div id="stage">
+ <div id="fade" style="position:absolute;inset:0">
+  <div id="cam">
+   <canvas id="dust" width="1920" height="1080"></canvas>
+   <svg viewBox="0 0 1920 1080">
+    <circle class="ring" cx="960" cy="540" r="525" transform="rotate(-100 960 540)"/>
+    <g id="g"></g>
+   </svg>
+  </div>
+ </div>
+ <div id="album"><div id="fl"><div id="cam2"><div id="book"><div id="shadow"></div><div id="baser" class="pg r"></div></div></div></div></div>
+ <div id="main"><!-- ▼ 本編はここに入れる(イベント "mainstart" で開始) --><div class="stub">本編</div></div>
+ <div id="flash"></div>
+ <div id="hud"><div id="ttl">桐榮祭 2026</div><button id="again">はじめから</button><button class="hudbtn" id="addPhoto">写真を追加</button><button class="hudbtn" id="exportVideo">MP4を書き出す</button><button class="nb" id="prev" aria-label="前へ">‹</button><button class="nb" id="next" aria-label="次へ">›</button><div id="tip">写真をタップして追加できます</div><div id="cnt"></div></div>
+ <input type="file" id="file" accept="image/*" hidden>
+ <div id="hint" class="msg"></div>
+ <div id="start" class="msg">タップして再生<small>♪ 音が出ます</small></div>
+</div></div>
+<script>
+const NS="http://www.w3.org/2000/svg",stage=document.getElementById("stage"),fit=document.getElementById("fit"),
+      g=document.getElementById("g"),hint=document.getElementById("hint"),startEl=document.getElementById("start");
+function resize(){
+  const s=Math.min(innerWidth/1920,innerHeight/1080);
+  fit.style.left=(innerWidth-1920*s)/2+"px"; fit.style.top=(innerHeight-1080*s)/2+"px";
+  fit.style.transform=`scale(${s})`;
+}
+addEventListener("resize",resize);resize();
+
+/* ---------- 文字 ---------- */
+let SCHED=[];
+function line(text,o){
+  const items=[...text].map(c=>{
+    const e=document.createElementNS(NS,"text");
+    e.textContent=c;e.setAttribute("font-size",o.size);e.setAttribute("class","ch "+o.cls);e.setAttribute("stroke-width",o.sw);
+    g.appendChild(e);
+    return {e,c,w:c===" "?o.size*.3:e.getComputedTextLength()};
+  });
+  const total=items.reduce((a,b)=>a+b.w,0)+o.track*(items.length-1);
+  let x=960-total/2;
+  items.forEach((it,i)=>{
+    if(it.c===" "){it.e.remove()}else{
+      const t=o.t0+i*o.step;
+      it.e.setAttribute("x",x);it.e.setAttribute("y",o.y+(o.jit?(Math.random()-.5)*o.jit:0));
+      it.e.style.setProperty("--t",t+"s");it.e.style.setProperty("--d",o.dur+"s");
+      const pn=(x+it.w/2-960)/960*.6;SCHED.push({k:"s",t,d:o.dur*.9,p:pn,big:o.oct<1,i},{k:"n",t:t+o.dur*.9,oct:o.oct,i,p:pn});
+    }
+    x+=it.w+o.track;
+  });
+}
+function rule(x,y,w,t,d){
+  const r=document.createElementNS(NS,"rect");
+  r.setAttribute("class","rule");r.setAttribute("x",x-w/2);r.setAttribute("y",y);r.setAttribute("width",w);r.setAttribute("height",3);
+  r.style.setProperty("--t",t+"s");r.style.setProperty("--d",d+"s");g.appendChild(r);
+  SCHED.push({k:"w",t,d,p:(x-960)/960*.6});
+}
+function build(){
+  g.innerHTML="";SCHED=[];
+  line("桐榮祭",{cls:"jp",size:300,y:650,t0:1.2,step:.9,dur:2.0,sw:2.5,track:50,oct:.5});
+  rule(960,725,1100,4.4,1.6);
+  line("2026",{cls:"en",size:96,y:310,t0:5.2,step:.3,dur:1.0,sw:1.6,track:44,jit:6,oct:1});
+  rule(640,270,200,5.0,1.2);rule(1280,270,200,5.0,1.2);
+  line("The Memoryies",{cls:"en",size:120,y:880,t0:6.4,step:.28,dur:1.0,sw:1.6,track:6,jit:8,oct:1});
+}
+
+/* ---------- 色とりどりの光 ---------- */
+const cv=document.getElementById("dust"),cx=cv.getContext("2d");
+const COL=[[255,150,120],[255,165,200],[140,195,255],[255,205,110],[190,170,255]];
+let P=[],T0=0;
+function seed(){
+  P=Array.from({length:60},()=>({x:Math.random()*1920,y:Math.random()*1200,r:6+Math.random()*Math.random()*46,
+    v:10+Math.random()*28,a:.18+Math.random()*.4,ph:Math.random()*6.28,c:COL[Math.floor(Math.random()*COL.length)]}));
+}
+function tick(now){
+  const t=(now-T0)/1000;cx.clearRect(0,0,1920,1080);
+  const env=Math.min(1,t/1.5)*(t>14.1?Math.max(0,1-(t-14.1)/.9):1);
+  for(const p of P){
+    const y=((p.y-p.v*t)%1200+1200)%1200-60,x=p.x+Math.sin(t*.4+p.ph)*30;
+    const a=p.a*env*(.65+.35*Math.sin(t*1.2+p.ph)),[r,gg,b]=p.c;
+    const gr=cx.createRadialGradient(x,y,0,x,y,p.r);
+    gr.addColorStop(0,`rgba(${r},${gg},${b},${a})`);gr.addColorStop(.7,`rgba(${r},${gg},${b},${a*.5})`);gr.addColorStop(1,`rgba(${r},${gg},${b},0)`);
+    cx.fillStyle=gr;cx.beginPath();cx.arc(x,y,p.r,0,6.283);cx.fill();
+  }
+  if(t<16)requestAnimationFrame(tick);
+}
+
+/* ---------- 音 (Web Audio で合成・映画風サウンドデザイン) ---------- */
+let AC,master,mus,fx,NB,PB,WS;
+const mf=m=>440*Math.pow(2,(m-69)/12);
+
+/* ホール系リバーブのIR: 立ち上がり前の間(プリディレイ)＋時間とともに高域が減衰 */
+function mkIR(sec,pre){
+  const sr=AC.sampleRate,len=Math.floor(sr*sec),ib=AC.createBuffer(2,len,sr),ps=Math.floor(sr*pre);
+  for(let c=0;c<2;c++){
+    const d=ib.getChannelData(c);let lp=0;
+    for(let i=ps;i<len;i++){
+      const t=(i-ps)/sr,k=.62*Math.exp(-t*1.1)+.035;
+      lp+=((Math.random()*2-1)-lp)*k;
+      d[i]=lp*Math.pow(1-i/len,2.4)*Math.min(1,t/.05)*2.4;
+    }
+  }
+  return ib;
+}
+function noiseBuf(sec,pink){
+  const n=Math.floor(AC.sampleRate*sec),b=AC.createBuffer(1,n,AC.sampleRate),d=b.getChannelData(0);
+  let b0=0,b1=0,b2=0,b3=0,b4=0,b5=0,b6=0;
+  for(let i=0;i<n;i++){
+    const w=Math.random()*2-1;
+    if(!pink){d[i]=w;continue}
+    b0=.99886*b0+w*.0555179;b1=.99332*b1+w*.0750759;b2=.969*b2+w*.153852;
+    b3=.8665*b3+w*.3104856;b4=.55*b4+w*.5329522;b5=-.7616*b5-w*.016898;
+    d[i]=(b0+b1+b2+b3+b4+b5+b6+w*.5362)*.11;b6=w*.115926;
+  }
+  return b;
+}
+function audioInit(){
+  if(AC)return;
+  AC=new(window.AudioContext||window.webkitAudioContext)();
+  if(!AC.createStereoPanner)AC.createStereoPanner=()=>{const g=AC.createGain();g.pan={value:0,setValueAtTime(){},linearRampToValueAtTime(){}};return g};
+  master=AC.createGain();
+  const cp=AC.createDynamicsCompressor();cp.threshold.value=-18;cp.knee.value=14;cp.ratio.value=3;cp.attack.value=.012;cp.release.value=.35;
+  const lim=AC.createDynamicsCompressor();lim.threshold.value=-3;lim.knee.value=0;lim.ratio.value=20;lim.attack.value=.002;lim.release.value=.1;
+  master.connect(cp);cp.connect(lim);lim.connect(AC.destination);
+  mus=AC.createGain();fx=AC.createGain();mus.connect(master);fx.connect(master);
+  const rv=AC.createConvolver();rv.buffer=mkIR(6,.035);
+  const rhp=AC.createBiquadFilter();rhp.type="highpass";rhp.frequency.value=170;
+  const wet=AC.createGain();wet.gain.value=.95;
+  const ms=AC.createGain();ms.gain.value=.6;const fs=AC.createGain();fs.gain.value=.4;
+  mus.connect(ms);fx.connect(fs);ms.connect(rhp);fs.connect(rhp);rhp.connect(rv);rv.connect(wet);wet.connect(master);
+  NB=noiseBuf(8,false);PB=noiseBuf(8,true);WS=null;
+}
+function pan(node,p,dest){const st=AC.createStereoPanner();st.pan.value=Math.max(-1,Math.min(1,p||0));node.connect(st);st.connect(dest);return st}
+function nsrc(buf,t,d){
+  const s=AC.createBufferSource();s.buffer=buf;
+  if(d+.3>=buf.duration){s.loop=true;s.start(t,Math.random()*buf.duration)}   // 長い音はループ
+  else s.start(t,Math.random()*(buf.duration-d-.2));
+  s.stop(t+d);return s;
+}
+
+/* --- 楽器 --- */
+/* FMベル: 寺の鐘〜グロッケン。倍音比3.5の変調が時間とともに減衰して金属的な響きに */
+function bell(f,t,v,dur,p,dest){
+  dur=dur||3;dest=dest||mus;
+  const c=AC.createOscillator(),m=AC.createOscillator(),mg=AC.createGain(),g=AC.createGain();
+  c.frequency.value=f;m.frequency.value=f*3.5;
+  mg.gain.setValueAtTime(f*2.4,t);mg.gain.exponentialRampToValueAtTime(f*.02,t+dur*.55);
+  m.connect(mg);mg.connect(c.frequency);
+  g.gain.setValueAtTime(0,t);g.gain.linearRampToValueAtTime(v,t+.004);g.gain.exponentialRampToValueAtTime(.0001,t+dur);
+  c.connect(g);pan(g,p,dest);c.start(t);m.start(t);c.stop(t+dur+.1);m.stop(t+dur+.1);
+}
+/* フェルトピアノ: 倍音ごとに減衰を変え、ハンマー音を足す */
+function piano(f,t,v,dur,p){
+  dur=dur||3;
+  const g=AC.createGain(),lp=AC.createBiquadFilter();
+  lp.type="lowpass";lp.frequency.setValueAtTime(Math.min(9000,f*8),t);lp.frequency.exponentialRampToValueAtTime(Math.max(500,f*1.6),t+dur*.7);
+  g.gain.setValueAtTime(0,t);g.gain.linearRampToValueAtTime(v,t+.005);g.gain.exponentialRampToValueAtTime(v*.4,t+.3);g.gain.exponentialRampToValueAtTime(.0001,t+dur);
+  [[1,1,"sine",0],[1,.5,"sine",5],[2,.32,"sine",0],[3,.16,"triangle",0],[4.02,.06,"sine",0]].forEach(([mu,a,ty,dt])=>{
+    const o=AC.createOscillator(),og=AC.createGain();o.type=ty;o.frequency.value=f*mu;o.detune.value=dt;
+    og.gain.setValueAtTime(a,t);og.gain.exponentialRampToValueAtTime(.002,t+dur/(mu*.7+.5));
+    o.connect(og);og.connect(lp);o.start(t);o.stop(t+dur+.05);
+  });
+  lp.connect(g);pan(g,p,mus);
+  const h=nsrc(PB,t,.05),hf=AC.createBiquadFilter(),hg=AC.createGain();
+  hf.type="bandpass";hf.frequency.value=Math.min(5000,f*4);hf.Q.value=1;
+  hg.gain.setValueAtTime(v*.5,t);hg.gain.exponentialRampToValueAtTime(.0001,t+.045);
+  h.connect(hf);hf.connect(hg);pan(hg,p,mus);
+}
+/* ストリングス: 3本デチューン＋遅れて深くなるビブラート＋フィルターのスウェル */
+function strings(notes,t,dur,v,o){
+  o=o||{};const cut=o.cut||1500,att=o.att||.6,rel=o.rel||1.8,vib=o.vib==null?7:o.vib,p=o.pan||0;
+  notes.forEach((m,ni)=>{
+    const f=mf(m),lp=AC.createBiquadFilter(),g=AC.createGain(),lfo=AC.createOscillator(),lg=AC.createGain();
+    lp.type="lowpass";lp.Q.value=.6;
+    lp.frequency.setValueAtTime(280,t);lp.frequency.linearRampToValueAtTime(cut,t+dur*att);
+    g.gain.setValueAtTime(0,t);g.gain.linearRampToValueAtTime(v,t+dur*att);g.gain.linearRampToValueAtTime(v*.85,t+dur);g.gain.linearRampToValueAtTime(0,t+dur+rel);
+    lfo.frequency.value=4.9+Math.random()*.9;
+    lg.gain.setValueAtTime(0,t);lg.gain.linearRampToValueAtTime(vib,t+dur*.9);lfo.connect(lg);
+    [-11,0,11].forEach(dt=>{
+      const os=AC.createOscillator();os.type="sawtooth";os.frequency.value=f;os.detune.value=dt;
+      lg.connect(os.detune);os.connect(lp);os.start(t);os.stop(t+dur+rel+.1);
+    });
+    lfo.start(t);lfo.stop(t+dur+rel+.1);
+    lp.connect(g);pan(g,p+((ni%5)-2)*.14,mus);
+  });
+}
+/* 合唱: ノコギリ波を母音「あ」のフォルマントで濾す */
+function choir(notes,t,dur,v){
+  notes.forEach((m,ni)=>{
+    const f=mf(m),g=AC.createGain(),a=AC.createBiquadFilter(),b=AC.createBiquadFilter(),lfo=AC.createOscillator(),lg=AC.createGain();
+    a.type=b.type="bandpass";a.frequency.value=730;b.frequency.value=1090;a.Q.value=b.Q.value=5;
+    g.gain.setValueAtTime(0,t);g.gain.linearRampToValueAtTime(v,t+dur*.55);g.gain.linearRampToValueAtTime(v*.8,t+dur);g.gain.linearRampToValueAtTime(0,t+dur+2);
+    lfo.frequency.value=5.2+Math.random()*.6;lg.gain.value=9;lfo.connect(lg);
+    [-8,8].forEach(dt=>{const os=AC.createOscillator();os.type="sawtooth";os.frequency.value=f;os.detune.value=dt;lg.connect(os.detune);os.connect(a);os.connect(b);os.start(t);os.stop(t+dur+2.1)});
+    a.connect(g);b.connect(g);lfo.start(t);lfo.stop(t+dur+2.1);pan(g,((ni%4)-1.5)*.3,mus);
+  });
+}
+/* --- 低音・効果 --- */
+function shaper(){
+  if(!WS){WS=AC.createWaveShaper();const c=new Float32Array(1024);
+    for(let i=0;i<1024;i++)c[i]=Math.tanh((i/512-1)*3.2);
+    WS.curve=c;const og=AC.createGain();og.gain.value=.5;WS.connect(og);og.connect(fx);}
+  return WS;
+}
+function deep(t,v,f0,f1,d){
+  const o=AC.createOscillator(),g=AC.createGain();
+  o.frequency.setValueAtTime(f0,t);o.frequency.exponentialRampToValueAtTime(f1,t+d*.5);
+  g.gain.setValueAtTime(0,t);g.gain.linearRampToValueAtTime(v,t+.012);g.gain.exponentialRampToValueAtTime(.0001,t+d);
+  o.connect(g);g.connect(shaper());o.start(t);o.stop(t+d+.1);
+}
+function drone(t,d,f,v){
+  const o=AC.createOscillator(),g=AC.createGain();o.frequency.value=f;
+  g.gain.setValueAtTime(0,t);g.gain.linearRampToValueAtTime(v,t+d*.4);g.gain.linearRampToValueAtTime(v*.5,t+d);g.gain.linearRampToValueAtTime(0,t+d+2);
+  o.connect(g);g.connect(shaper());o.start(t);o.stop(t+d+2.1);
+}
+function braam(t,v){
+  [55,55.4,110,110.6,165].forEach(f=>{
+    const o=AC.createOscillator(),lp=AC.createBiquadFilter(),g=AC.createGain();
+    o.type="sawtooth";o.frequency.value=f;lp.type="lowpass";
+    lp.frequency.setValueAtTime(120,t);lp.frequency.exponentialRampToValueAtTime(1100,t+.9);lp.frequency.exponentialRampToValueAtTime(150,t+3.6);
+    g.gain.setValueAtTime(0,t);g.gain.linearRampToValueAtTime(v,t+.45);g.gain.exponentialRampToValueAtTime(.0001,t+4);
+    o.connect(lp);lp.connect(g);g.connect(fx);o.start(t);o.stop(t+4.1);
+  });
+}
+function crash(t,v){
+  const s=nsrc(PB,t,3.4),hp=AC.createBiquadFilter(),lp=AC.createBiquadFilter(),g=AC.createGain();
+  hp.type="highpass";hp.frequency.value=140;lp.type="lowpass";
+  lp.frequency.setValueAtTime(10000,t);lp.frequency.exponentialRampToValueAtTime(260,t+3.2);
+  g.gain.setValueAtTime(0,t);g.gain.linearRampToValueAtTime(.3*v,t+.008);g.gain.exponentialRampToValueAtTime(.0001,t+3.3);
+  s.connect(hp);hp.connect(lp);lp.connect(g);g.connect(fx);
+}
+/* シネマティック・インパクト: サブ落ち＋胴鳴り＋ノイズのクラッシュ＋金属の余韻＋ブラーム */
+function impact(t,v){
+  deep(t,.5*v,100,28,3);deep(t,.34*v,190,55,.5);crash(t,v);
+  bell(65.41,t,.1*v,7,0,fx);bell(98,t,.05*v,6,0,fx);braam(t,.06*v);
+}
+/* ライザー: ノイズとノコギリ波が上昇して頂点で切れる */
+function riser(t,d,v){
+  const s=nsrc(NB,t,d+.1),bp=AC.createBiquadFilter(),g=AC.createGain();
+  bp.type="bandpass";bp.Q.value=1.4;bp.frequency.setValueAtTime(250,t);bp.frequency.exponentialRampToValueAtTime(9000,t+d);
+  g.gain.setValueAtTime(.0001,t);g.gain.exponentialRampToValueAtTime(v,t+d*.96);g.gain.linearRampToValueAtTime(0,t+d);
+  s.connect(bp);bp.connect(g);g.connect(fx);
+  [-9,9].forEach(dt=>{
+    const o=AC.createOscillator(),lp=AC.createBiquadFilter(),og=AC.createGain();
+    o.type="sawtooth";o.detune.value=dt;o.frequency.setValueAtTime(110,t);o.frequency.exponentialRampToValueAtTime(880,t+d);
+    lp.type="lowpass";lp.frequency.setValueAtTime(300,t);lp.frequency.exponentialRampToValueAtTime(5200,t+d);
+    og.gain.setValueAtTime(.0001,t);og.gain.exponentialRampToValueAtTime(v*.22,t+d*.96);og.gain.linearRampToValueAtTime(0,t+d);
+    o.connect(lp);lp.connect(og);og.connect(fx);o.start(t);o.stop(t+d+.05);
+  });
+}
+/* 空気を切る音: 帯域が動きながら左右に流れる */
+function whoosh(t,d,f0,f1,v,p0,p1){
+  const s=nsrc(PB,t,d+.1),bp=AC.createBiquadFilter(),g=AC.createGain(),st=AC.createStereoPanner();
+  bp.type="bandpass";bp.Q.value=1.1;bp.frequency.setValueAtTime(f0,t);bp.frequency.exponentialRampToValueAtTime(f1,t+d);
+  g.gain.setValueAtTime(.0001,t);g.gain.exponentialRampToValueAtTime(v,t+d*.55);g.gain.exponentialRampToValueAtTime(.0001,t+d);
+  st.pan.setValueAtTime(p0||0,t);st.pan.linearRampToValueAtTime(p1||0,t+d);
+  s.connect(bp);bp.connect(g);g.connect(st);st.connect(fx);
+}
+/* 筆/ペンの走り: 帯域ノイズに不規則な強弱 */
+function brush(t,d,v,p,big){
+  const s=nsrc(PB,t,d+.05),bp=AC.createBiquadFilter(),g=AC.createGain(),n=28,c=new Float32Array(n);
+  bp.type="bandpass";bp.Q.value=big?.7:1.1;
+  bp.frequency.setValueAtTime(big?900:2300,t);bp.frequency.linearRampToValueAtTime(big?2700:4800,t+d);
+  for(let i=0;i<n;i++){const x=i/(n-1);c[i]=v*Math.pow(Math.sin(Math.PI*x),.8)*(.6+Math.random()*.6)}
+  g.gain.setValueCurveAtTime(c,t,d);
+  s.connect(bp);bp.connect(g);pan(g,p,fx);
+}
+/* 劇場の空気感 */
+function air(t,d,v){
+  const s=nsrc(PB,t,d),lp=AC.createBiquadFilter(),g=AC.createGain();
+  lp.type="lowpass";lp.frequency.value=700;
+  g.gain.setValueAtTime(0,t);g.gain.linearRampToValueAtTime(v,t+2);g.gain.setValueAtTime(v,t+d-3);g.gain.linearRampToValueAtTime(0,t+d);
+  s.connect(lp);lp.connect(g);g.connect(fx);
+}
+/* 革表紙のきしみ */
+function creak(t,d,v){
+  const s=nsrc(PB,t,d),bp=AC.createBiquadFilter(),g=AC.createGain(),n=40,c=new Float32Array(n);
+  bp.type="bandpass";bp.Q.value=7;
+  bp.frequency.setValueAtTime(260,t);bp.frequency.linearRampToValueAtTime(640,t+d);
+  for(let i=0;i<n;i++){const x=i/(n-1);c[i]=v*Math.sin(Math.PI*x)*(Math.random()<.35?.25:.6+Math.random()*.6)}
+  g.gain.setValueCurveAtTime(c,t,d);
+  s.connect(bp);bp.connect(g);pan(g,-.2,fx);
+  const r=nsrc(PB,t+.1,d),hp=AC.createBiquadFilter(),rg=AC.createGain();
+  hp.type="highpass";hp.frequency.value=2600;
+  rg.gain.setValueAtTime(0,t+.1);rg.gain.linearRampToValueAtTime(v*.25,t+d*.5);rg.gain.linearRampToValueAtTime(0,t+d);
+  r.connect(hp);hp.connect(rg);rg.connect(fx);
+}
+
+/* --- 構成 (時間は再生開始からの秒) --- */
+const TC=[[45,52,57,60,64],[41,48,53,57,60],[36,48,55,60,64],[43,50,55,59,62]];     // Am F C/E G
+const ARP=[[57,64,69,72,76],[53,60,65,69,72],[55,60,64,67,72],[55,59,62,67,71]];
+const MC=[[48,55,60,64,67],[43,50,55,59,62],[41,48,53,57,60],[48,55,60,64,67,72]];  // C G F C
+function titleNote(s,t){
+  if(s.oct<1){                                    // 「桐」「榮」「祭」: 寺の鐘が鳴る
+    const m=[45,52,57][s.i]||45;
+    bell(mf(m),t+s.t,.16,6.5,s.p,mus);bell(mf(m+12),t+s.t,.05,4,s.p,mus);deep(t+s.t,.1,110,45,.9);
+  }else{                                          // 「2026」「The Memoryies」: コードに沿ったオルゴール的アルペジオ
+    const a=ARP[Math.min(3,Math.floor(s.t/3.7))],m=a[(s.i*2)%5]+12;
+    piano(mf(m),t+s.t,.05,2.8,s.p);bell(mf(m+12),t+s.t,.016,2.2,s.p);
+  }
+}
+/* --- 映像の動きに合わせた効果音 --- */
+function circPan(st,t,d){                       // 円を描く動きに合わせて音が左右を一周する
+  const pl=AC.createOscillator(),pg=AC.createGain();
+  pl.frequency.value=1/d;pg.gain.value=.85;pl.connect(pg);
+  try{pg.connect(st.pan)}catch(e){}
+  pl.start(t);pl.stop(t+d+.1);
+}
+function circleSweep(t,d,v){
+  const s=nsrc(PB,t,d+.1),bp=AC.createBiquadFilter(),g=AC.createGain(),st=AC.createStereoPanner();
+  bp.type="bandpass";bp.Q.value=2;bp.frequency.setValueAtTime(300,t);bp.frequency.exponentialRampToValueAtTime(2800,t+d);
+  g.gain.setValueAtTime(.0001,t);g.gain.exponentialRampToValueAtTime(v,t+d*.7);g.gain.exponentialRampToValueAtTime(.0001,t+d);
+  circPan(st,t,d);s.connect(bp);bp.connect(g);g.connect(st);st.connect(fx);
+}
+function ringTone(t,d,v){                       // グラスの縁をなぞるような、昇っていく倍音
+  const st=AC.createStereoPanner();circPan(st,t,d);st.connect(mus);
+  [1,2.01,3.03].forEach((mu,i)=>{
+    const o=AC.createOscillator(),g=AC.createGain(),tl=AC.createOscillator(),tg=AC.createGain();
+    o.frequency.setValueAtTime(440*mu,t);o.frequency.exponentialRampToValueAtTime(880*mu,t+d);
+    g.gain.setValueAtTime(0,t);g.gain.linearRampToValueAtTime(v/(i*1.6+1),t+d*.75);g.gain.linearRampToValueAtTime(0,t+d+.3);
+    tl.frequency.value=5.5+i;tg.gain.value=v*.25/(i+1);tl.connect(tg);tg.connect(g.gain);
+    o.connect(g);g.connect(st);o.start(t);tl.start(t);o.stop(t+d+.4);tl.stop(t+d+.4);
+  });
+}
+function rumble(t,d,v){                         // カメラのゆっくりしたズームに沿って膨らむ地鳴り
+  const s=nsrc(PB,t,d),lp=AC.createBiquadFilter(),g=AC.createGain();
+  lp.type="lowpass";lp.frequency.setValueAtTime(80,t);lp.frequency.linearRampToValueAtTime(190,t+d);
+  g.gain.setValueAtTime(0,t);g.gain.linearRampToValueAtTime(v,t+d*.9);g.gain.linearRampToValueAtTime(0,t+d+.2);
+  s.connect(lp);lp.connect(g);g.connect(shaper());
+}
+function drop(t,v,p){                           // 墨が落ちる「ぽちゃん」
+  const o=AC.createOscillator(),g=AC.createGain();
+  o.frequency.setValueAtTime(1100,t);o.frequency.exponentialRampToValueAtTime(260,t+.12);
+  g.gain.setValueAtTime(0,t);g.gain.linearRampToValueAtTime(v,t+.004);g.gain.exponentialRampToValueAtTime(.0001,t+.4);
+  o.connect(g);pan(g,p,fx);o.start(t);o.stop(t+.45);
+}
+function glow(f,t,v,dur,p){                     // 文字に墨が満ちていく柔らかな光
+  [1,2,3].forEach((mu,i)=>{
+    const o=AC.createOscillator(),g=AC.createGain();o.frequency.value=f*mu;
+    g.gain.setValueAtTime(0,t);g.gain.linearRampToValueAtTime(v/(i*2+1),t+.5);g.gain.exponentialRampToValueAtTime(.0001,t+dur);
+    o.connect(g);pan(g,p,mus);o.start(t);o.stop(t+dur+.05);
+  });
+}
+function shing(t,d,v,p,spread){                 // 線が伸びる「シュッ」＋先端の金属音
+  (spread?[-1,1]:[0]).forEach(sg=>{
+    const s=nsrc(NB,t,d+.1),bp=AC.createBiquadFilter(),g=AC.createGain(),st=AC.createStereoPanner(),n=20,c=new Float32Array(n);
+    bp.type="bandpass";bp.Q.value=.9;bp.frequency.setValueAtTime(1500,t);bp.frequency.exponentialRampToValueAtTime(8000,t+d);
+    for(let i=0;i<n;i++)c[i]=v*Math.pow(Math.sin(Math.PI*i/(n-1)),.6);
+    g.gain.setValueCurveAtTime(c,t,d);
+    st.pan.setValueAtTime(spread?0:p,t);st.pan.linearRampToValueAtTime(spread?sg*.9:Math.max(-1,Math.min(1,p*1.6)),t+d);
+    s.connect(bp);bp.connect(g);g.connect(st);st.connect(fx);
+  });
+  bell(mf(spread?103:108),t+d,v*.7,2.4,spread?0:p,mus);
+}
+function thwip(t,v,p){                          // 表紙がめくれ始める布ずれ
+  const s=nsrc(PB,t,.32),bp=AC.createBiquadFilter(),g=AC.createGain();
+  bp.type="bandpass";bp.Q.value=.8;bp.frequency.setValueAtTime(700,t);bp.frequency.exponentialRampToValueAtTime(3500,t+.22);
+  g.gain.setValueAtTime(0,t);g.gain.linearRampToValueAtTime(v,t+.04);g.gain.exponentialRampToValueAtTime(.0001,t+.3);
+  s.connect(bp);bp.connect(g);pan(g,p,fx);
+}
+function glint(t,v,p){                          // 金箔の反射のきらめき
+  [96,100,103,108].forEach((m,i)=>bell(mf(m),t+i*.05,v*(1-i*.15),1.8,(p||0)+(i-1.5)*.15,mus));
+}
+function dive(t,d,v){                           // ズームに向かって加速する風切り
+  const s=nsrc(PB,t,d+.1),bp=AC.createBiquadFilter(),g=AC.createGain();
+  bp.type="bandpass";bp.Q.value=1.2;bp.frequency.setValueAtTime(250,t);bp.frequency.exponentialRampToValueAtTime(7500,t+d);
+  g.gain.setValueAtTime(.0001,t);g.gain.exponentialRampToValueAtTime(v,t+d*.98);g.gain.linearRampToValueAtTime(0,t+d+.04);
+  s.connect(bp);bp.connect(g);g.connect(fx);
+  const o=AC.createOscillator(),lp=AC.createBiquadFilter(),og=AC.createGain();
+  o.type="sawtooth";o.frequency.setValueAtTime(90,t);o.frequency.exponentialRampToValueAtTime(700,t+d);
+  lp.type="lowpass";lp.frequency.setValueAtTime(300,t);lp.frequency.exponentialRampToValueAtTime(4000,t+d);
+  og.gain.setValueAtTime(.0001,t);og.gain.exponentialRampToValueAtTime(v*.16,t+d*.98);og.gain.linearRampToValueAtTime(0,t+d+.04);
+  o.connect(lp);lp.connect(og);og.connect(fx);o.start(t);o.stop(t+d+.1);
+}
+function bloom(t,d,v){                          // 閃光が薄れていく光の粒
+  const s=nsrc(NB,t,d),hp=AC.createBiquadFilter(),g=AC.createGain();
+  hp.type="highpass";hp.frequency.value=4500;
+  g.gain.setValueAtTime(0,t);g.gain.linearRampToValueAtTime(v,t+d*.3);g.gain.linearRampToValueAtTime(0,t+d);
+  s.connect(hp);hp.connect(g);g.connect(fx);
+}
+
+function cinema(){
+  const t=AC.currentTime+.06;
+  master.gain.cancelScheduledValues(0);master.gain.setValueAtTime(0,t);
+  master.gain.linearRampToValueAtTime(.55,t+1.1);master.gain.setValueAtTime(.55,t+14);master.gain.linearRampToValueAtTime(1,t+19);
+  master.gain.setValueAtTime(1,t+32.5);master.gain.linearRampToValueAtTime(0,t+36.5);
+  mus.gain.cancelScheduledValues(0);mus.gain.setValueAtTime(1,t);
+
+  /* ── 序章 (0–14s): 画面の動きと一対一で音を付ける ── */
+  air(t,15,.012);
+  rumble(t,14.1,.08);                                   // カメラのズーム
+  drone(t,5,41.2,.15);drone(t+5,9.5,41.2,.1);
+  strings([33,40],t,6,.009,{cut:700});
+  TC.forEach((n,i)=>{
+    strings(n,t+i*3.7,3.7,.0062);
+    strings([n[n.length-1]+12,n[n.length-2]+12],t+i*3.7,3.7,.003,{cut:2600,vib:11,pan:.2});
+  });
+  circleSweep(t+.4,6,.05);ringTone(t+.4,6,.035);       // 円が描かれる (0.4–6.4s)
+  riser(t+.5,4.4,.06);
+  mus.gain.setValueAtTime(1,t+4.7);mus.gain.linearRampToValueAtTime(.12,t+4.97);
+  mus.gain.setValueAtTime(.12,t+5.0);mus.gain.linearRampToValueAtTime(1,t+6.2);
+  impact(t+5,1);                                        // 「祭」を書き終える瞬間
+  choir([53,57,60,65],t+4.95,2.5,.016);choir([48,55,60,64],t+7.4,3.7,.014);choir([50,55,59,62],t+11.1,3.7,.014);
+  [[5.0,81,1.8],[7.6,76,1.9],[11.2,86,2],[13.3,83,1.5]]
+    .forEach(([s,m,d])=>strings([m],t+s,d,.005,{cut:3200,vib:12,att:.4,pan:.15}));
+  SCHED.forEach(s=>{
+    if(s.k==="s"){
+      if(s.big){                                        // 桐・榮・祭: 墨の一滴 → 筆の走り → 墨が満ちる
+        drop(t+s.t,.1,s.p);deep(t+s.t,.16,150,55,.6);
+        brush(t+s.t,s.d,.085,s.p,true);
+        glow(mf([45,52,57][s.i]+12),t+s.t+s.d*.61,.05,1.6,s.p);
+      }else brush(t+s.t,s.d,.05,s.p,false);             // 2026 / The Memoryies: 細いペン先
+    }else if(s.k==="w"){
+      if(s.d>1.4)shing(t+s.t,s.d,.05,0,true);           // 中央の線が左右へ伸びる
+      else shing(t+s.t,s.d,.03,s.p*4.5,false);          // 2026 の両脇の短い線
+    }else titleNote(s,t);
+  });
+  for(let i=0;i<16;i++)bell(mf([84,86,88,91,93][i%5]),t+2+Math.random()*11.8,.006+Math.random()*.008,3.2,Math.random()*1.6-.8); // 舞う光の粒
+  riser(t+8.8,2.2,.022);
+  impact(t+11,.5);
+  [86,91,95,98].forEach((m,i)=>bell(mf(m),t+11.05+i*.18,.02,4.5,(i-1.5)*.35));
+  [67,71,74,79,83,79].forEach((m,i)=>piano(mf(m),t+11.4+i*.5,.04,3.2,(i%2?.2:-.2)));
+  whoosh(t+14.1,.9,5500,300,.07,.7,-.7);               // タイトルが消える
+
+  /* ── 転換 (14–19s): アルバム登場 → 表紙が開く ── */
+  strings([36,43,48],t+14.2,3.2,.01,{cut:900});
+  [72,76,79,84,79,76].forEach((m,i)=>{bell(mf(m),t+14.9+i*.45,.03,3,(i%2?.3:-.3));piano(mf(m-12),t+14.9+i*.45,.03,2.5,0)});
+  glint(t+15.4,.018,.3);                                // 表紙の箔押しが光る
+  thwip(t+17.05,.06,-.2);creak(t+17,1.8,.05);
+  whoosh(t+17,2.2,200,1300,.035,-.4,.3);
+  strings([48,55,60,64,67,71],t+17,5,.007);
+  piano(mf(60),t+17.1,.05,4);piano(mf(67),t+17.4,.04,4);piano(mf(76),t+17.8,.03,4);
+  deep(t+18.9,.22,90,40,1.2);noise_thump(t+18.9);       // 開き終えて着地
+
+  /* ── 突入 (19–23s): ズーム → 閃光 → 本編 ── */
+  riser(t+19,1.7,.12);
+  dive(t+19.3,1.4,.12);
+  [19.45,19.9,20.28].forEach((s,i)=>deep(t+s,.2+i*.06,120,50,.35));   // 加速する鼓動
+  mus.gain.setValueAtTime(1,t+20.45);mus.gain.linearRampToValueAtTime(.1,t+20.69);
+  mus.gain.setValueAtTime(.1,t+20.72);mus.gain.linearRampToValueAtTime(1,t+22);
+  impact(t+20.7,.9);                                    // 閃光
+  [84,88,91,98,103].forEach((m,i)=>bell(mf(m),t+20.75+i*.12,.02,5.5,(i-2)*.3));
+  bloom(t+21.4,2.6,.03);
+  choir([48,55,60,64],t+21.3,3.8,.03);
+  MC.forEach((n,i)=>{
+    strings(n,t+21.4+i*3.7,3.7,.015);
+    strings([n[n.length-1]+12],t+21.4+i*3.7,3.7,.005,{cut:2800,vib:11,pan:.2});
+    piano(mf(n[0]),t+21.4+i*3.7,.1,3.8,-.1);
+  });
+  bell(mf(96),t+22.4,.02,2.5,.3);                       // 画面の操作部が現れる
+  [[21.6,76],[22.35,79],[23.1,84],[24,83],[24.5,79],
+   [25.3,74],[26.1,79],[26.9,83],[27.8,81],[28.3,79],
+   [29,72],[29.8,77],[30.6,81],[31.5,79],[32.1,77],
+   [32.7,76],[33.5,72],[34.3,79]]
+    .forEach(([s,m])=>{piano(mf(m),t+s,.07,3.4,.15);bell(mf(m+12),t+s,.016,2.4,.3)});
+  piano(mf(84),t+34.9,.08,5,.1);bell(mf(96),t+34.9,.024,5,.3);
+  strings([36,43],t+32.5,3.7,.016,{cut:800});
+}
+function noise_thump(t){
+  const s=nsrc(PB,t,.3),lp=AC.createBiquadFilter(),g=AC.createGain();
+  lp.type="lowpass";lp.frequency.value=380;
+  g.gain.setValueAtTime(.2,t);g.gain.exponentialRampToValueAtTime(.0001,t+.28);
+  s.connect(lp);lp.connect(g);g.connect(fx);
+}
+
+function flipSound(){if(!AC)return;const t=AC.currentTime;thwip(t,.05,0);brush(t+.04,.4,.03,0,false);}   // ページをめくる音
+
+/* ---------- アルバム (表紙が開く → ズーム → 本編) ---------- */
+const albumEl=document.getElementById("album"),bookEl=document.getElementById("book"),flash=document.getElementById("flash"),
+      fileEl=document.getElementById("file"),cnt=document.getElementById("cnt");
+const L=4,PH=[["#ffd3c4","#ffb4c2"],["#cfe4ff","#e3d4ff"],["#ffe7b8","#ffcfa6"],["#d6f0e0","#bfe3f5"],["#ffc9d9","#ffe1c4"]];
+const PAGES=[null,
+ [[60,90,540,470,-2,"桐榮祭、はじまる"],[300,590,290,220,3,"準備のあいだに"]],
+ [[70,80,300,350,-3,"朝"],[300,330,290,230,2,"昼"],[90,570,330,250,-2,"放課後"]],
+ [[50,70,260,260,2,"笑顔"],[340,110,260,260,-3,"歓声"],[100,420,460,380,1,"みんなで一枚"]],
+ [[60,100,540,430,-1,"ステージ"],[330,550,250,250,3,"拍手"]],
+ [[70,80,280,330,-3,"片付けも思い出"],[300,300,300,300,3,"夕焼け"],[80,630,260,190,-2,"またね"]],null];
+const COVER='<div class="cov"><div class="frm"></div><div class="vt foil">桐榮祭</div><div class="yr foil">2026</div><div class="sb foil">The Memoryies</div></div>';
+function pg(i){
+  if(i===0)return '<div class="ep"><div class="big">Memories</div><div class="jp">桐榮祭 2026</div></div>';
+  if(i===6)return '<div class="ep"><div class="big">to be continued…</div><div class="yo">また来年、ここで。</div></div>';
+  return PAGES[i].map(([x,y,w,h,r,c],j)=>{const a=PH[(i+j)%5];
+    return `<div class="pol" style="left:${x}px;top:${y}px;width:${w}px;height:${h}px;transform:rotate(${r}deg)"><div class="ph" style="background-image:linear-gradient(135deg,${a[0]},${a[1]})">＋<br>写真を追加</div><div class="cap">${c}</div></div>`;
+  }).join("")+`<div class="pn">${i}</div>`;
+}
+for(let i=0;i<L;i++){
+  const lf=document.createElement("div"),fr=document.createElement("div"),bk=document.createElement("div");
+  lf.className="leaf"+(i?"":" cv");fr.className=i?"face pg r":"face";bk.className="face bk pg l";
+  fr.innerHTML=i?pg(2*i-1):COVER;bk.innerHTML=pg(2*i);lf.append(fr,bk);bookEl.append(lf);
+}
+let k=0,ui=false,phTarget=null;
+function apply(){
+  bookEl.querySelectorAll(".leaf").forEach((lf,i)=>{const f=i<k;
+    lf.style.transform=`translateZ(${(f?i+1:L-i)*2}px) rotateY(${f?-180:0}deg)`;
+    /* 見えているページだけクリックを受ける(重なった下のページに当たるのを防ぐ) */
+    lf.children[0].style.pointerEvents=i===k?"auto":"none";lf.children[1].style.pointerEvents=i===k-1?"auto":"none";});
+  cnt.textContent=Math.max(k,1)+" / "+L;
+}
+function go(d){const n=Math.max(1,Math.min(L,k+d));if(!ui||n===k)return;k=n;flipSound();apply();}
+bookEl.addEventListener("click",e=>{const ph=e.target.closest(".pol");if(ph&&ui){phTarget=ph.querySelector(".ph");fileEl.click();}});
+fileEl.addEventListener("change",()=>{const f=fileEl.files[0];if(f&&phTarget){phTarget.style.backgroundImage=`url(${URL.createObjectURL(f)})`;phTarget.textContent="";phTarget.dataset.photo="1";}fileEl.value="";});
+// 写真追加ボタンは、現在表示中のページにある未設定スロットを順番に選択
+document.getElementById("addPhoto").onclick=()=>{
+  const slots=[...bookEl.querySelectorAll(".leaf")].flatMap(lf=>[...lf.querySelectorAll(".pol .ph")]);
+  const empty=slots.find(el=>!el.dataset.photo);
+  if(empty){phTarget=empty;fileEl.click();}
+  else alert("写真を追加できる空き枠がありません。ページをめくってご確認ください。");
+};
+
+document.getElementById("prev").onclick=()=>go(-1);
+document.getElementById("next").onclick=()=>go(1);
+document.getElementById("again").onclick=()=>{if(AC){AC.close();AC=null;WS=null;}audioInit();AC.resume();play();};
+// 画面収録を使ってオープニング全体を書き出す（対応ブラウザではMP4、非対応時はWebM）
+let exportStream=null,exportRecorder=null,exportChunks=[];
+document.getElementById("exportVideo").onclick=async()=>{
+  if(!navigator.mediaDevices?.getDisplayMedia||!window.MediaRecorder){
+    alert("このブラウザは画面録画に対応していません。PC版ChromeまたはSafariでお試しください。");return;
+  }
+  try{
+    exportStream=await navigator.mediaDevices.getDisplayMedia({video:{frameRate:30},audio:true});
+    const mp4="video/mp4";
+    const mime=MediaRecorder.isTypeSupported(mp4)?mp4:
+      (MediaRecorder.isTypeSupported("video/webm;codecs=vp9")?"video/webm;codecs=vp9":"video/webm");
+    exportChunks=[];
+    exportRecorder=new MediaRecorder(exportStream,{mimeType:mime});
+    exportRecorder.ondataavailable=e=>{if(e.data.size)exportChunks.push(e.data);};
+    exportRecorder.onstop=()=>{
+      const blob=new Blob(exportChunks,{type:mime}),url=URL.createObjectURL(blob),a=document.createElement("a");
+      a.href=url;a.download=mime.startsWith("video/mp4")?"桐榮祭2026_Opening.mp4":"桐榮祭2026_Opening.webm";
+      a.click();setTimeout(()=>URL.revokeObjectURL(url),60000);
+      exportStream?.getTracks().forEach(t=>t.stop());exportStream=null;
+      document.getElementById("exportVideo").textContent="MP4を書き出す";
+    };
+    exportStream.getVideoTracks()[0].addEventListener("ended",()=>{if(exportRecorder?.state==="recording")exportRecorder.stop();});
+    exportRecorder.start(250);
+    document.getElementById("exportVideo").textContent="録画中…";
+    // 収録開始後にアニメーションを最初から再生し、約38秒で停止
+    if(AC){try{await AC.close();}catch(e){}AC=null;WS=null;}
+    audioInit();await AC.resume();play();
+    setTimeout(()=>{if(exportRecorder?.state==="recording")exportRecorder.stop();},39000);
+  }catch(err){
+    if(err.name!=="NotAllowedError")alert("動画を書き出せませんでした: "+err.message);
+    exportStream?.getTracks().forEach(t=>t.stop());exportStream=null;
+    document.getElementById("exportVideo").textContent="MP4を書き出す";
+  }
+};
+addEventListener("keydown",e=>{if(e.key==="ArrowRight")go(1);if(e.key==="ArrowLeft")go(-1);});
+let sx=null;
+albumEl.addEventListener("pointerdown",e=>{sx=e.clientX;});
+albumEl.addEventListener("pointerup",e=>{if(sx!==null&&Math.abs(e.clientX-sx)>60)go(e.clientX<sx?1:-1);sx=null;});
+let AT=[];const at=(s,f)=>AT.push(setTimeout(f,s*1000));
+function albumSeq(){
+  AT.forEach(clearTimeout);AT=[];
+  albumEl.className="";stage.classList.remove("ui");flash.classList.remove("on");ui=false;k=0;apply();
+  at(14.2,()=>albumEl.classList.add("show"));
+  at(17,()=>{k=1;apply();albumEl.classList.add("open");});
+  at(19.3,()=>albumEl.classList.add("dive"));
+  at(20.7,()=>flash.classList.add("on"));
+  at(21.4,()=>{albumEl.classList.add("snap");albumEl.classList.remove("dive");albumEl.classList.add("main");void albumEl.offsetWidth;albumEl.classList.remove("snap");flash.classList.remove("on");
+    document.dispatchEvent(new CustomEvent("mainstart"));   // ← 本編の開始合図
+  });
+  at(22.4,()=>{stage.classList.add("ui");ui=true;});
+}
+
+/* ---------- 再生 ---------- */
+let timer;
+function play(){
+  clearTimeout(timer);hint.classList.remove("on");
+  stage.classList.remove("play");build();seed();void stage.offsetWidth;
+  stage.classList.add("play");T0=performance.now();requestAnimationFrame(tick);
+  if(AC)cinema();
+  albumSeq();
+}
+const ready=Promise.race([
+  Promise.all([document.fonts.load('600 300px "Shippori Mincho"',"桐榮祭"),
+               document.fonts.load('italic 500 100px "Cormorant Garamond"',"2026The Memoryies")]),
+  new Promise(r=>setTimeout(r,3500))
+]);
+startEl.addEventListener("click",async()=>{
+  audioInit();AC.resume();startEl.classList.add("gone");await ready;play();
+});
+stage.addEventListener("click",()=>{if(hint.classList.contains("on"))play();});
+</script>
+</body>
+</html>
