@@ -178,7 +178,7 @@ function rule(x,y,w,t,d){
 }
 function build(){
   g.innerHTML="";SCHED=[];
-  line("桐榮祭",{cls:"jp",size:300,y:650,t0:1.2,step:.9,dur:2.0,sw:2.5,track:50,oct:.5});
+   line("桐榮祭",{cls:"jp",size:300,y:650,t0:1.2,step:.9,dur:2.0,sw:2.5,track:50,oct:.5});
   rule(960,725,860,4.4,1.6);
   line("2026",{cls:"en",size:96,y:310,t0:5.2,step:.3,dur:1.0,sw:1.6,track:44,jit:6,oct:1});
   rule(640,270,200,5.0,1.2);rule(1280,270,200,5.0,1.2);
@@ -358,7 +358,7 @@ function albumSound(t){
   deep(t+22.8,.4,100,28,3.2);sweep(t+22.8,1.6,"lowpass",3000,150,.12,.0005);
   strings([65.41,130.81,196,261.63,329.63],t+22.8,3,.006);
 }
-function flipSound(){if(!AC)return;const t=AC.currentTime;noise(t,.55,"bandpass",1400,4200,.06,9);pluck(98,t+.45,.05,1.5);}
+ function flipSound(){if(!AC)return;const t=AC.currentTime;noise(t,.55,"bandpass",1400,4200,.06,9);pluck(98,t+.45,.05,1.5);}
 
 /* ---------- アルバム ---------- */
 const albumEl=document.getElementById("album"),bookEl=document.getElementById("book"),flash=document.getElementById("flash"),
@@ -538,7 +538,7 @@ async function xpol(c,pol){
     const rg=bg.match(/rgb\([^)]*\)/g)||["#ffd3c4","#ffb4c2"],gr=c.createLinearGradient(px,py,px+pw,py+ph);gr.addColorStop(0,rg[0]);gr.addColorStop(1,rg[1]||rg[0]);
     c.fillStyle=gr;c.fillRect(px,py,pw,ph);
     c.fillStyle="rgba(29,42,99,.5)";c.font="22px Yomogi,sans-serif";c.textAlign="center";c.textBaseline="middle";
-    const rows=el.innerHTML.split("<br>");rows.forEach((q,i)=>c.fillText(q,px+pw/2,py+ph/2+(i-(rows.length-1)/2)*35));
+       const rows=el.innerHTML.split("<br>");rows.forEach((q,i)=>c.fillText(q,px+pw/2,py+ph/2+(i-(rows.length-1)/2)*35));
   }
   c.restore();
   c.save();c.translate(0,-h/2+1);c.rotate(-3*Math.PI/180);c.fillStyle="rgba(238,108,77,.38)";c.fillRect(-60,-17,120,34);c.restore();
@@ -654,7 +654,7 @@ async function xrun(){
   for(const codec of["avc1.640028","avc1.4d0028","avc1.42001f"]){const cfg={codec,width:XW,height:XH,bitrate:16e6,framerate:XFPS};if((await VideoEncoder.isConfigSupported(cfg)).supported){vcfg=cfg;break;}}
   if(!vcfg)throw new Error("H.264エンコーダが使えません");
   let encErr=null;
-  const venc=new VideoEncoder({output:(ch,meta)=>muxer.addVideoChunk(ch,meta),error:e=>{encErr=e;}});venc.configure(vcfg);
+  const venc=new VideoEncoder({output:(ch,meta)=>muxer.addVideoChunk(ch,meta),error:e=>{encErr=e;} });venc.configure(vcfg);
   const aenc=new AudioEncoder({output:(ch,meta)=>muxer.addAudioChunk(ch,meta),error:e=>{encErr=e;}});
   aenc.configure({codec:"mp4a.40.2",sampleRate:48000,numberOfChannels:2,bitrate:256000});
   const L0=abuf.getChannelData(0),R0=abuf.getChannelData(1),st=Math.round(.2*48000),tot=Math.round(END*48000);
@@ -718,15 +718,6 @@ function play(){
     requestAnimationFrame(()=>{stage.classList.add("play");T0=performance.now();requestAnimationFrame(tick);albumSeq();});
   },500);
 }
-const ready=Promise.race([
-  Promise.all([document.fonts.load('600 300px "Shippori Mincho"',"桐榮祭"),
-               document.fonts.load('italic 500 100px "Cormorant Garamond"',"2026The Memories")]),
-  new Promise(r=>setTimeout(r,3500))
-]);
-startEl.addEventListener("click",async()=>{
-  audioInit();AC.resume();startEl.classList.add("gone");await ready;play();
-});
-stage.addEventListener("click",()=>{if(hint.classList.contains("on"))play();});
 </script>
 </body>
 </html>
