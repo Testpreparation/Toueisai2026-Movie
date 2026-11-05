@@ -353,7 +353,7 @@ function heavy(t){
 function albumSound(t){
   noise(t+17,1.8,"bandpass",150,600,.05,10);
   strings([130.81,196,261.63,329.63,392,493.88],t+17,5,.006);
-  [19.6,19.8,20].forEach(q=>noise(t+q,.45,"bandpass",1800,5200,.05,8));
+  [18.8,19.6,20.4].forEach(q=>noise(t+q,.55,"bandpass",1400,4200,.05,9));
   sweep(t+21.2,1.6,"bandpass",200,6500,.003,.1);
   deep(t+22.8,.4,100,28,3.2);sweep(t+22.8,1.6,"lowpass",3000,150,.12,.0005);
   strings([65.41,130.81,196,261.63,329.63],t+22.8,3,.006);
@@ -448,7 +448,7 @@ mfile.addEventListener("change",()=>{
   else toast("動画をセットしました（アルバムのあとに再生されます）");
 });
 /* ---------- mp4 レンダリング書き出し (WebCodecs: 1920x1080 / H.264 / AAC 48kHz) ---------- */
-const XFPS=30,XW=1920,XH=1080,XMOVIE=23.4,XLP=[[17,2],[19.6,.55],[19.8,.55],[20,.55]];
+const XFPS=30,XW=1920,XH=1080,XMOVIE=23.4,XLP=[[17,2],[18.8,.9],[19.6,.9],[20.4,.9]];
 function xbez(x1,y1,x2,y2){return p=>{if(p<=0)return 0;if(p>=1)return 1;let lo=0,hi=1,t=p;for(let i=0;i<30;i++){const u=1-t,x=3*u*u*t*x1+3*u*t*t*x2+t*t*t;if(x<p)lo=t;else hi=t;t=(lo+hi)/2;}const u=1-t;return 3*u*u*t*y1+3*u*t*t*y2+t*t*t;};}
 const xE=xbez(.25,.1,.25,1),xIO=xbez(.42,0,.58,1),xIN=xbez(.42,0,1,1),xOpen=xbez(.45,.05,.2,1),xDive=xbez(.6,0,.9,.5),
       xLeaf=xbez(.45,.05,.55,.95),xPush=xbez(0,0,.58,1),xDraw=xbez(.4,0,.6,1),xRise=xbez(.2,.7,.2,1),xRule=xbez(.6,0,.2,1),xRing=xbez(.5,0,.2,1);
@@ -699,10 +699,9 @@ function albumSeq(){
   if(mv)mv.pause();
   at(14.2,()=>albumEl.classList.add("show"));
   at(17,()=>{k=1;apply();albumEl.classList.add("open");});
-  at(19.4,()=>albumEl.classList.add("fast"));
-  at(19.6,()=>{k=2;apply();});
-  at(19.8,()=>{k=3;apply();});
-  at(20,()=>{k=4;apply();});
+  at(18.8,()=>{k=2;apply();});
+  at(19.6,()=>{k=3;apply();});
+  at(20.4,()=>{k=4;apply();});
   at(21.4,()=>albumEl.classList.add("dive"));
   at(22.7,()=>flash.classList.add("on"));
   at(23.4,()=>{albumEl.classList.remove("fast");albumEl.classList.add("snap");albumEl.classList.remove("dive");albumEl.classList.add("main");void albumEl.offsetWidth;albumEl.classList.remove("snap");flash.classList.remove("on");enterMovie();});
