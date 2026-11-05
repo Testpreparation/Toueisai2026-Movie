@@ -1,9 +1,10 @@
 <!DOCTYPE html>
 <html lang="ja">
 <head>
+<script src="https://cdn.jsdelivr.net/npm/mp4-muxer@5.1.3/build/mp4-muxer.js"></script>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>桐榮祭 2026 The Memoryies</title>
+<title>桐榮祭 2026 The Memories</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Shippori+Mincho:wght@600&family=Cormorant+Garamond:ital,wght@1,500&family=Yomogi&display=swap" rel="stylesheet">
@@ -28,7 +29,7 @@ svg{position:absolute;inset:0;width:1920px;height:1080px;overflow:visible}
 @keyframes rise{from{transform:translateY(28px)}to{transform:none}}
 @keyframes grow{to{transform:scaleX(1)}}
 @keyframes zoom{from{transform:scale(1)}to{transform:scale(1.07)}}
-@keyframes out{to{opacity:0}}
+@keyframes out{to{opacity:0;visibility:hidden}}
 .play #cam{animation:zoom 15s ease-in-out both}
 .play #fade{animation:out .9s ease-in 14.1s both}
 .play .ch{animation:
@@ -42,7 +43,7 @@ svg{position:absolute;inset:0;width:1920px;height:1080px;overflow:visible}
 #hint.on{opacity:.65}
 #start{inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:28px;background:rgba(255,248,238,.55);backdrop-filter:blur(6px);transition:opacity .6s;font-size:64px}
 #start small{font-size:30px;opacity:.6;letter-spacing:.15em}
-#start.gone{opacity:0;pointer-events:none}
+#start.gone{opacity:0;pointer-events:none;visibility:hidden;transition:opacity .6s,visibility 0s .6s}
 #start{z-index:20}
 #album{position:absolute;inset:0;perspective:2600px;opacity:0;pointer-events:none;transition:opacity 1.6s ease;z-index:5}
 #album.show{opacity:1}#album.main{pointer-events:auto}
@@ -56,7 +57,7 @@ svg{position:absolute;inset:0;width:1920px;height:1080px;overflow:visible}
 #album.snap #cam2,#album.snap #book,#album.snap .leaf,#album.snap #shadow{transition:none!important}
 #book{position:absolute;left:-660px;top:-440px;width:1320px;height:880px;transform:translateX(-330px);transition:transform 2.2s cubic-bezier(.45,.05,.2,1)}
 #album.open #book{transform:none}
-#shadow{position:absolute;left:660px;top:30px;width:660px;height:880px;background:rgba(70,40,50,.38);filter:blur(36px);transform:translate3d(0,40px,-60px);transition:all 2.2s cubic-bezier(.45,.05,.2,1)}
+#shadow{position:absolute;left:660px;top:30px;width:660px;height:880px;background:radial-gradient(ellipse at center,rgba(70,40,50,.42),rgba(70,40,50,0) 72%);transform:translate3d(0,40px,-60px);transition:all 2.2s cubic-bezier(.45,.05,.2,1)}
 #album.open #shadow{left:0;width:1320px}
 #baser{position:absolute;left:660px;top:0;width:660px;height:880px;background:#efe3cf;border-radius:0 6px 6px 0}
 .leaf{position:absolute;left:660px;top:0;width:660px;height:880px;transform-origin:0 50%;transform-style:preserve-3d;transition:transform .9s cubic-bezier(.5,.08,.2,1)}
@@ -77,10 +78,10 @@ svg{position:absolute;inset:0;width:1920px;height:1080px;overflow:visible}
 .ep .big{font:italic 500 84px "Cormorant Garamond",serif}.ep .jp{font-size:34px;letter-spacing:.3em}.ep .yo{font:34px Yomogi,sans-serif}
 .cov{position:absolute;inset:0;border-radius:6px 18px 18px 6px;overflow:hidden;
  background:repeating-linear-gradient(45deg,rgba(255,255,255,.045) 0 2px,transparent 2px 5px),repeating-linear-gradient(-45deg,rgba(0,0,0,.09) 0 2px,transparent 2px 5px),linear-gradient(135deg,#2e3f8c,#16204e);box-shadow:inset 0 0 0 2px rgba(255,255,255,.06),inset 30px 0 40px -20px rgba(0,0,0,.5)}
-.cov::after{content:"";position:absolute;inset:0;background:linear-gradient(105deg,transparent 35%,rgba(255,255,255,.15) 50%,transparent 65%) 100% 0/300% 100%;animation:sheen 6s ease-in-out infinite}
+.cov::after{content:"";position:absolute;inset:0;background:linear-gradient(105deg,transparent 35%,rgba(255,255,255,.15) 50%,transparent 65%) 100% 0/300% 100%;animation:sheen 6s ease-in-out 2}
 @keyframes sheen{0%{background-position:100% 0}60%,100%{background-position:-100% 0}}
 .frm{position:absolute;inset:36px;border:2px solid rgba(240,200,120,.75)}.frm::after{content:"";position:absolute;inset:9px;border:1px solid rgba(240,200,120,.45)}
-.foil{background:linear-gradient(120deg,#f6dc98,#c8922f 30%,#fbe9b0 50%,#b98228 70%,#f1d283) 0 0/250% 100%;-webkit-background-clip:text;background-clip:text;color:transparent;animation:foil 5s linear infinite}
+.foil{background:linear-gradient(120deg,#f6dc98,#c8922f 30%,#fbe9b0 50%,#b98228 70%,#f1d283) 0 0/250% 100%;-webkit-background-clip:text;background-clip:text;color:transparent;animation:foil 5s linear 2}
 @keyframes foil{to{background-position:-250% 0}}
 .cov .vt{position:absolute;right:120px;top:130px;writing-mode:vertical-rl;font:600 170px/1 "Shippori Mincho",serif;letter-spacing:.12em}
 .cov .yr{position:absolute;left:84px;top:140px;font:italic 500 60px "Cormorant Garamond",serif;letter-spacing:.12em}
@@ -100,7 +101,7 @@ svg{position:absolute;inset:0;width:1920px;height:1080px;overflow:visible}
 #bulk{position:absolute;right:56px;top:112px;pointer-events:auto;cursor:pointer;border:2px solid var(--coral);background:rgba(255,250,240,.8);color:var(--ink);border-radius:40px;padding:8px 26px;font:600 24px "Shippori Mincho",serif}
 #movie{position:absolute;inset:0;z-index:6;opacity:0;pointer-events:none;transition:opacity 1s}
 .movie #movie{opacity:1;pointer-events:auto}
-.movie #album{opacity:0!important;pointer-events:none!important}
+.movie #album{opacity:0!important;pointer-events:none!important;visibility:hidden;transition:opacity 1.6s ease,visibility 0s 1.6s}
 .movie .nb,.movie #cnt,.movie #tip{display:none}
 #mframe{position:absolute;left:160px;top:90px;width:1600px;height:900px;padding:16px;background:#fff;box-shadow:0 30px 60px rgba(80,50,40,.3),0 2px 4px rgba(0,0,0,.2)}
 #mframe::before{content:"";position:absolute;top:-18px;left:50%;width:180px;height:38px;margin-left:-90px;background:rgba(238,108,77,.4);transform:rotate(-2deg);z-index:1}
@@ -114,6 +115,7 @@ svg{position:absolute;inset:0;width:1920px;height:1080px;overflow:visible}
 .rec #hud{display:none}
 #toast{position:absolute;left:0;right:0;bottom:130px;text-align:center;z-index:9;font:28px Yomogi,sans-serif;color:var(--ink);opacity:0;transition:opacity .5s;pointer-events:none}
 #toast.on{opacity:1}
+#album.fast .leaf:not(.cv){transition-duration:.55s}
 @media (prefers-reduced-motion:reduce){.play #cam{animation:none}}
 </style>
 </head>
@@ -180,7 +182,7 @@ function build(){
   rule(960,725,860,4.4,1.6);
   line("2026",{cls:"en",size:96,y:310,t0:5.2,step:.3,dur:1.0,sw:1.6,track:44,jit:6,oct:1});
   rule(640,270,200,5.0,1.2);rule(1280,270,200,5.0,1.2);
-  line("The Memoryies",{cls:"en",size:120,y:880,t0:6.4,step:.28,dur:1.0,sw:1.6,track:6,jit:8,oct:1});
+  line("The Memories",{cls:"en",size:120,y:880,t0:6.4,step:.28,dur:1.0,sw:1.6,track:6,jit:8,oct:1});
 }
 
 /* ---------- 色とりどりの光 ---------- */
@@ -207,14 +209,14 @@ function tick(now){
 /* ---------- 音 (Web Audio で合成) ---------- */
 let AC,master,bus,NB;
 const SCALE=[523.25,587.33,659.25,783.99,880,1046.5];
-function audioInit(){
-  if(AC)return;
-  AC=new(window.AudioContext||window.webkitAudioContext)();
-  master=AC.createGain();const cp=AC.createDynamicsCompressor();cp.threshold.value=-20;cp.ratio.value=3;master.connect(cp);cp.connect(AC.destination);window.CP=cp;window.REC=AC.createMediaStreamDestination();cp.connect(window.REC);
+function audioInit(ctx){
+  if(AC&&!ctx)return;
+  AC=ctx||new(window.AudioContext||window.webkitAudioContext)();
+  master=AC.createGain();const cp=AC.createDynamicsCompressor();cp.threshold.value=-20;cp.ratio.value=3;master.connect(cp);cp.connect(AC.destination);window.CP=cp;
   bus=AC.createGain();bus.connect(master);
-  const len=AC.sampleRate*4.8,ib=AC.createBuffer(2,len,AC.sampleRate);
+  const len=AC.sampleRate*3.4,ib=AC.createBuffer(2,len,AC.sampleRate);
   for(let c=0;c<2;c++){const d=ib.getChannelData(c);for(let i=0;i<len;i++)d[i]=(Math.random()*2-1)*Math.pow(1-i/len,2.0);}
-  const cv2=AC.createConvolver();cv2.buffer=ib;const vg=AC.createGain();vg.gain.value=.85;
+  const cv2=AC.createConvolver();cv2.buffer=ib;const vg=AC.createGain();vg.gain.value=.55;
   bus.connect(cv2);cv2.connect(vg);vg.connect(master);
   NB=AC.createBuffer(1,AC.sampleRate,AC.sampleRate);
   const nd=NB.getChannelData(0);for(let i=0;i<nd.length;i++)nd[i]=Math.random()*2-1;
@@ -295,20 +297,22 @@ function cinema(){
   master.gain.linearRampToValueAtTime(.95,t+1.2);master.gain.setValueAtTime(.95,t+14);master.gain.linearRampToValueAtTime(.8,t+15);master.gain.setValueAtTime(.8,t+25);master.gain.linearRampToValueAtTime(0,t+27.5);
   const CH=[[110,164.81,220,261.63,329.63],[87.31,130.81,174.61,220,261.63],[65.41,130.81,196,261.63,329.63],[98,146.83,196,246.94,293.66]];
   const AR=[[220,329.63,440,523.25,659.25],[174.61,261.63,349.23,440,523.25],[196,261.63,329.63,392,523.25],[196,246.94,293.66,392,493.88]];
-  strings([55,82.41],t,6,.012);
-  CH.forEach((n,i)=>strings(n,t+i*3.7,3.7,.0075));
-  sweep(t+.6,4.4,"bandpass",300,5200,.003,.1);
-  boom(t+5.0,.5);sweep(t+5.0,1.8,"lowpass",2200,120,.18,.0005);
+  /* 1. パッド: 4つの和音をゆっくり */
+  CH.forEach((n,i)=>strings(n,t+i*3.7,3.7,.006));
+  /* 2. 低音: サブ1本 + 5秒と11秒の決めの一撃 */
+  drone(t,14,41.2,.14);
+  sweep(t+.8,4.2,"bandpass",250,5000,.002,.07);
+  deep(t+5,.4,100,30,3);braam(t+5,.05);sweep(t+5,1.6,"lowpass",2000,120,.12,.0005);
+  deep(t+11,.3,100,30,3);
+  /* 3. 筆: 「桐榮祭」の3文字と最初のラインだけ */
   SCHED.forEach(s=>{
-    if(s.k==="s")noise(t+s.t,s.d,"bandpass",1800,3800,.025,12);
-    else if(s.k==="w")noise(t+s.t,s.d,"bandpass",500,2600,.03,8);
-    else{const a=AR[Math.min(3,Math.floor(s.t/3.7))];pluck(a[(s.i*2)%5]*s.oct*2,t+s.t,.045,2.6);}
+    if(s.k==="s"){if(s.t<4)noise(t+s.t,s.d,"bandpass",1800,3800,.018,12);}
+    else if(s.k==="w"){if(s.t<4.6)noise(t+s.t,s.d,"bandpass",500,2600,.025,8);}
+    else if(s.oct<1){const a=AR[Math.min(3,Math.floor(s.t/3.7))];pluck(a[(s.i*2)%5]*s.oct*2,t+s.t,.05,2.6);}
   });
-  sweep(t+8.8,2.2,"highpass",3000,9000,.003,.05);
-  boom(t+11.0,.3);
-  [1174.66,1567.98,1975.5,2349.3].forEach((f,i)=>tone(f,t+11.05+i*.18,4.5,.022));
-  [392,493.88,587.33,783.99,987.77,783.99].forEach((f,i)=>pluck(f,t+11.4+i*.5,.04,3));
-  heavy(t);albumSound(t);
+  /* 4. 終盤: ピアノの短いメロディ */
+  [392,493.88,587.33,783.99,987.77,783.99].forEach((f,i)=>pluck(f,t+11.4+i*.5,.045,3));
+  albumSound(t);
 }
 
 /* ---------- 重低音 ---------- */
@@ -347,12 +351,12 @@ function heavy(t){
   deep(t+11,.3,100,30,3);braam(t+11,.05);
 }
 function albumSound(t){
-  const CH=[[110,164.81,220,261.63,329.63],[87.31,130.81,174.61,220,261.63],[65.41,130.81,196,261.63,329.63],[98,146.83,196,246.94,293.66]];
-  strings([55,82.41,110],t+14.2,3,.01);
-  noise(t+17,1.8,"bandpass",150,600,.07,10);deep(t+17.9,.25,90,40,1.2);
-  strings([130.81,196,261.63,329.63,392,493.88],t+17,5,.007);
-  sweep(t+21.2,1.7,"bandpass",200,6500,.003,.13);drone(t+21.2,2,36,.25);
-  deep(t+22.8,.45,100,28,3.2);sweep(t+22.8,2,"lowpass",3000,150,.2,.0005);strings(CH[0],t+22.8,3,.006);
+  noise(t+17,1.8,"bandpass",150,600,.05,10);
+  strings([130.81,196,261.63,329.63,392,493.88],t+17,5,.006);
+  [19.6,19.8,20].forEach(q=>noise(t+q,.45,"bandpass",1800,5200,.05,8));
+  sweep(t+21.2,1.6,"bandpass",200,6500,.003,.1);
+  deep(t+22.8,.4,100,28,3.2);sweep(t+22.8,1.6,"lowpass",3000,150,.12,.0005);
+  strings([65.41,130.81,196,261.63,329.63],t+22.8,3,.006);
 }
 function flipSound(){if(!AC)return;const t=AC.currentTime;noise(t,.55,"bandpass",1400,4200,.06,9);pluck(98,t+.45,.05,1.5);}
 
@@ -366,7 +370,7 @@ const PAGES=[null,
  [[50,70,260,260,2,"笑顔"],[340,110,260,260,-3,"歓声"],[100,420,460,380,1,"みんなで一枚"]],
  [[60,100,540,430,-1,"ステージ"],[330,550,250,250,3,"拍手"]],
  [[70,80,280,330,-3,"片付けも思い出"],[300,300,300,300,3,"夕焼け"],[80,630,260,190,-2,"またね"]],[[40,230,580,380,-1,"いよいよ本編"]]];
-const COVER='<div class="cov"><div class="frm"></div><div class="vt foil">桐榮祭</div><div class="yr foil">2026</div><div class="sb foil">The Memoryies</div></div>';
+const COVER='<div class="cov"><div class="frm"></div><div class="vt foil">桐榮祭</div><div class="yr foil">2026</div><div class="sb foil">The Memories</div></div>';
 function pg(i){
   if(i===0)return '<div class="ep"><div class="big">Memories</div><div class="jp">桐榮祭 2026</div></div>';
   return PAGES[i].map(([x,y,w,h,r,c],j)=>{const a=PH[(i+j)%5];
@@ -379,9 +383,19 @@ for(let i=0;i<L;i++){
   fr.innerHTML=i?pg(2*i-1):COVER;bk.innerHTML=pg(2*i);lf.append(fr,bk);bookEl.append(lf);
 }
 let k=0,ui=false,phTarget=null;
-function apply(){
-  bookEl.querySelectorAll(".leaf").forEach((lf,i)=>{const f=i<k;
-    lf.style.transform=`translateZ(${(f?i+1:L-i)*2}px) rotateY(${f?-180:0}deg)`;});
+function apply(instant){
+  const fast=albumEl.classList.contains("fast");
+  bookEl.querySelectorAll(".leaf").forEach((lf,i)=>{
+    const f=i<k,was=!!lf._f,za=(was?i+1:L-i)*2,zb=(f?i+1:L-i)*2;
+    lf.getAnimations().forEach(a=>a.cancel());
+    lf.style.transition="none";
+    lf.style.transform=`translateZ(${zb}px) rotateY(${f?-180:0}deg)`;
+    if(!instant&&f!==was){
+      const zm=Math.max((i+1)*2,(L-i)*2)+60;
+      lf.animate([{transform:`translateZ(${za}px) rotateY(${was?-180:0}deg)`},{transform:`translateZ(${zm}px) rotateY(-90deg)`,offset:.5},{transform:`translateZ(${zb}px) rotateY(${f?-180:0}deg)`}],{duration:i===0?2000:(fast?550:900),easing:"cubic-bezier(.45,.05,.55,.95)"});
+    }
+    lf._f=f;
+  });
   cnt.textContent=Math.max(k,1)+" / "+L;
 }
 function go(d){const n=Math.max(1,Math.min(L,k+d));if(!ui||n===k||stage.classList.contains("movie"))return;k=n;flipSound();apply();}
@@ -402,8 +416,8 @@ document.getElementById("again").onclick=()=>{if(AC){AC.close();AC=null;WS=null;
 addEventListener("keydown",e=>{if(e.key==="ArrowRight")go(1);if(e.key==="ArrowLeft")go(-1);});
 /* ---------- main movie ---------- */
 const mph=document.getElementById("mph"),mbox=document.getElementById("mbox"),mfile=document.getElementById("mfile"),toastEl=document.getElementById("toast");
-let movieURL=null,mv=null,exporting=null,tt;
-function toast(m){toastEl.textContent=m;toastEl.classList.add("on");clearTimeout(tt);tt=setTimeout(()=>toastEl.classList.remove("on"),5000);}
+let movieURL=null,movieFile=null,mv=null,exporting=null,tt;
+function toast(m,keep){toastEl.textContent=m;toastEl.classList.add("on");clearTimeout(tt);if(!keep)tt=setTimeout(()=>toastEl.classList.remove("on"),5000);}
 function mountMovie(){
   mbox.querySelectorAll("video").forEach(v=>{v.pause();v.remove();});mv=null;
   if(!movieURL){mph.style.display="";return;}
@@ -428,33 +442,251 @@ function exitMovie(){
 document.getElementById("pick").onclick=document.getElementById("mpick").onclick=()=>mfile.click();
 document.getElementById("mback").onclick=exitMovie;
 mfile.addEventListener("change",()=>{
-  const f=mfile.files[0];if(!f)return;
+  const f=mfile.files[0];if(!f)return;movieFile=f;
   if(movieURL)URL.revokeObjectURL(movieURL);movieURL=URL.createObjectURL(f);mfile.value="";
   if(ui||stage.classList.contains("movie")){enterMovie();toast("動画をセットしました");}
   else toast("動画をセットしました（アルバムのあとに再生されます）");
 });
-/* ---------- mp4 書き出し (画面+音声を録画) ---------- */
+/* ---------- mp4 レンダリング書き出し (WebCodecs: 1920x1080 / H.264 / AAC 48kHz) ---------- */
+const XFPS=30,XW=1920,XH=1080,XMOVIE=23.4,XLP=[[17,2],[19.6,.55],[19.8,.55],[20,.55]];
+function xbez(x1,y1,x2,y2){return p=>{if(p<=0)return 0;if(p>=1)return 1;let lo=0,hi=1,t=p;for(let i=0;i<30;i++){const u=1-t,x=3*u*u*t*x1+3*u*t*t*x2+t*t*t;if(x<p)lo=t;else hi=t;t=(lo+hi)/2;}const u=1-t;return 3*u*u*t*y1+3*u*t*t*y2+t*t*t;};}
+const xE=xbez(.25,.1,.25,1),xIO=xbez(.42,0,.58,1),xIN=xbez(.42,0,1,1),xOpen=xbez(.45,.05,.2,1),xDive=xbez(.6,0,.9,.5),
+      xLeaf=xbez(.45,.05,.55,.95),xPush=xbez(0,0,.58,1),xDraw=xbez(.4,0,.6,1),xRise=xbez(.2,.7,.2,1),xRule=xbez(.6,0,.2,1),xRing=xbez(.5,0,.2,1);
+const xp=(t,t0,d)=>Math.min(1,Math.max(0,(t-t0)/d));
+const xsleep=ms=>new Promise(r=>setTimeout(r,ms));
+function xcam(t){
+  const B={rx:26,ry:-30,s:.8,tx:0,ty:0},O={rx:4,ry:0,s:1.15,tx:0,ty:0},D={rx:0,ry:0,s:3.1,tx:1023,ty:62};
+  const mix=(a,b,p)=>({rx:a.rx+(b.rx-a.rx)*p,ry:a.ry+(b.ry-a.ry)*p,s:a.s+(b.s-a.s)*p,tx:a.tx+(b.tx-a.tx)*p,ty:a.ty+(b.ty-a.ty)*p});
+  if(t<17)return B;
+  if(t<21.4)return mix(B,O,xOpen(xp(t,17,2.4)));
+  if(t<XMOVIE)return mix(O,D,xDive(xp(t,21.4,1.5)));
+  const p=xPush(xp(t,XMOVIE,7));return{rx:4-2*p,ry:0,s:1.15+.08*p,tx:0,ty:0};
+}
+function xproj(x,y,z,th,Z,bx,cm,fy){
+  const c=Math.cos(th),s=Math.sin(th);
+  let X=x*c+z*s,Zz=-x*s+z*c+Z,Y=y;
+  X+=bx;X*=cm.s;Y*=cm.s;
+  const a=cm.ry*Math.PI/180,b=cm.rx*Math.PI/180;
+  let X2=X*Math.cos(a)+Zz*Math.sin(a),Z2=-X*Math.sin(a)+Zz*Math.cos(a);
+  let Y2=Y*Math.cos(b)-Z2*Math.sin(b);const Z3=Y*Math.sin(b)+Z2*Math.cos(b);
+  X2+=cm.tx;Y2+=cm.ty+fy;
+  const k=2600/(2600-Z3);return[960+X2*k,540+Y2*k,Z3];
+}
+function xpoly(c,pts){c.beginPath();pts.forEach((q,i)=>i?c.lineTo(q[0],q[1]):c.moveTo(q[0],q[1]));c.closePath();}
+function xtri(c,img,s0,s1,s2,d0,d1,d2){
+  const dx1=s1[0]-s0[0],dy1=s1[1]-s0[1],dx2=s2[0]-s0[0],dy2=s2[1]-s0[1],det=dx1*dy2-dx2*dy1;if(!det)return;
+  const du1=d1[0]-d0[0],dv1=d1[1]-d0[1],du2=d2[0]-d0[0],dv2=d2[1]-d0[1];
+  const a=(du1*dy2-du2*dy1)/det,cc=(dx1*du2-dx2*du1)/det,b=(dv1*dy2-dv2*dy1)/det,d=(dx1*dv2-dx2*dv1)/det;
+  const e=d0[0]-a*s0[0]-cc*s0[1],f=d0[1]-b*s0[0]-d*s0[1],mx=(d0[0]+d1[0]+d2[0])/3,my=(d0[1]+d1[1]+d2[1])/3;
+  const x0=Math.max(0,Math.floor(Math.min(s0[0],s1[0],s2[0]))-1),y0=Math.max(0,Math.floor(Math.min(s0[1],s1[1],s2[1]))-1),
+        x1=Math.min(img.width,Math.ceil(Math.max(s0[0],s1[0],s2[0]))+1),y1=Math.min(img.height,Math.ceil(Math.max(s0[1],s1[1],s2[1]))+1);
+  if(x1<=x0||y1<=y0)return;
+  c.save();c.beginPath();
+  [d0,d1,d2].forEach((q,i)=>{const vx=q[0]-mx,vy=q[1]-my,l=Math.hypot(vx,vy)||1,px=q[0]+vx/l*.6,py=q[1]+vy/l*.6;i?c.lineTo(px,py):c.moveTo(px,py);});
+  c.closePath();c.clip();c.setTransform(a,b,cc,d,e,f);c.drawImage(img,x0,y0,x1-x0,y1-y0,x0,y0,x1-x0,y1-y0);c.restore();
+}
+function xalbum(c,t,tex){
+  const cm=xcam(t),fy=t<XMOVIE?-7*(1-Math.cos(2*Math.PI*t/7)):0,po=xOpen(xp(t,17,2.2)),bx=-330*(1-po);
+  const pr=(x,y,z,th,Z)=>xproj(x,y,z,th,Z,bx,cm,fy);
+  const sx0=660*(1-po)-660,sx1=sx0+660+660*po;
+  c.save();c.filter="blur(36px)";c.fillStyle="rgba(70,40,50,.38)";
+  xpoly(c,[[sx0,-370],[sx1,-370],[sx1,510],[sx0,510]].map(q=>pr(q[0],q[1],-60,0,0)));c.fill();c.restore();c.filter="none";
+  c.fillStyle="#efe3cf";xpoly(c,[[0,-440],[660,-440],[660,440],[0,440]].map(q=>pr(q[0],q[1],0,0,0)));c.fill();
+  const N=10,M=12,list=[];
+  for(const f of tex){
+    const i=f.leaf,p=xLeaf(xp(t,XLP[i][0],XLP[i][1])),th=-Math.PI*p,zu=(L-i)*2,zf=(i+1)*2,zm=Math.max(zu,zf)+60,Z=p<.5?zu+(zm-zu)*2*p:zm+(zf-zm)*(2*p-1),vt=[];
+    for(let iy=0;iy<=M;iy++)for(let ix=0;ix<=N;ix++){
+      const a=ix/N*f.W,b=iy/M*f.H;vt.push(pr(f.back?f.W-a:a,b-f.H/2,0,th,Z));
+    }
+    const p0=vt[0],p1=vt[N],p2=vt[M*(N+1)+N];
+    if((p1[0]-p0[0])*(p2[1]-p0[1])-(p1[1]-p0[1])*(p2[0]-p0[0])<=0)continue;
+    list.push({f,vt,z:vt[(M/2)*(N+1)+N/2][2]});
+  }
+  list.sort((a,b)=>a.z-b.z);
+  for(const o of list){
+    const f=o.f,sc=f.sc;
+    for(let iy=0;iy<M;iy++)for(let ix=0;ix<N;ix++){
+      const i0=iy*(N+1)+ix,A=o.vt[i0],B=o.vt[i0+1],C=o.vt[i0+N+1],D=o.vt[i0+N+2];
+      const sa=[ix/N*f.W*sc,iy/M*f.H*sc],sb=[(ix+1)/N*f.W*sc,iy/M*f.H*sc],scc=[ix/N*f.W*sc,(iy+1)/M*f.H*sc],sd=[(ix+1)/N*f.W*sc,(iy+1)/M*f.H*sc];
+      xtri(c,f.cv,sa,sb,scc,A,B,C);xtri(c,f.cv,sb,sd,scc,B,D,C);
+    }
+  }
+}
+function xloadImg(u){return new Promise(r=>{const i=new Image();i.onload=()=>r(i);i.onerror=()=>r(null);i.src=u;});}
+function xcover(c,el,W,H){
+  c.save();c.beginPath();c.roundRect(0,0,W,H,[6,18,18,6]);c.clip();
+  let g1=c.createLinearGradient(0,0,W,H);g1.addColorStop(0,"#2e3f8c");g1.addColorStop(1,"#16204e");c.fillStyle=g1;c.fillRect(0,0,W,H);
+  c.strokeStyle="rgba(255,255,255,.04)";c.lineWidth=1;for(let i=-H;i<W;i+=5){c.beginPath();c.moveTo(i,0);c.lineTo(i+H,H);c.stroke();}
+  g1=c.createLinearGradient(0,0,70,0);g1.addColorStop(0,"rgba(0,0,0,.45)");g1.addColorStop(1,"rgba(0,0,0,0)");c.fillStyle=g1;c.fillRect(0,0,70,H);c.restore();
+  c.strokeStyle="rgba(240,200,120,.75)";c.lineWidth=2;c.strokeRect(37,37,W-74,H-74);
+  c.strokeStyle="rgba(240,200,120,.45)";c.lineWidth=1;c.strokeRect(46.5,46.5,W-93,H-93);
+  const fg=c.createLinearGradient(0,0,W,H);[[0,"#f6dc98"],[.3,"#c8922f"],[.5,"#fbe9b0"],[.7,"#b98228"],[1,"#f1d283"]].forEach(q=>fg.addColorStop(q[0],q[1]));
+  c.fillStyle=fg;c.textAlign="center";c.textBaseline="middle";c.font='600 170px "Shippori Mincho",serif';
+  [...(el.querySelector(".vt").textContent)].forEach((ch,i)=>c.fillText(ch,W-205,215+i*190.4));
+  c.textAlign="left";c.textBaseline="top";c.font='italic 500 60px "Cormorant Garamond",serif';c.letterSpacing="7px";c.fillText(el.querySelector(".yr").textContent,84,140);
+  c.textBaseline="bottom";c.font='italic 500 54px "Cormorant Garamond",serif';c.letterSpacing="0px";c.fillText(el.querySelector(".sb").textContent,84,H-100);
+}
+async function xpol(c,pol){
+  const l=parseFloat(pol.style.left),t=parseFloat(pol.style.top),w=parseFloat(pol.style.width),h=parseFloat(pol.style.height);
+  const m=/rotate\(([-\d.]+)deg\)\s*scale\(([\d.]+)\)/.exec(pol.style.transform)||[0,0,1];
+  c.save();c.translate(l+w/2,t+h/2);c.rotate(m[1]*Math.PI/180);c.scale(+m[2],+m[2]);
+  c.shadowColor="rgba(80,50,40,.25)";c.shadowBlur=22;c.shadowOffsetY=10;c.fillStyle="#fff";c.fillRect(-w/2,-h/2,w,h);c.shadowColor="transparent";c.shadowBlur=0;c.shadowOffsetY=0;
+  const px=-w/2+14,py=-h/2+14,pw=w-28,ph=h-72,el=pol.querySelector(".ph"),bg=el.style.backgroundImage||"",um=/url\(["']?(.*?)["']?\)/.exec(bg);
+  c.save();c.beginPath();c.rect(px,py,pw,ph);c.clip();
+  if(um){const im=await xloadImg(um[1]);if(im){const k2=Math.max(pw/im.width,ph/im.height);c.drawImage(im,px+(pw-im.width*k2)/2,py+(ph-im.height*k2)/2,im.width*k2,im.height*k2);}}
+  else{
+    const rg=bg.match(/rgb\([^)]*\)/g)||["#ffd3c4","#ffb4c2"],gr=c.createLinearGradient(px,py,px+pw,py+ph);gr.addColorStop(0,rg[0]);gr.addColorStop(1,rg[1]||rg[0]);
+    c.fillStyle=gr;c.fillRect(px,py,pw,ph);
+    c.fillStyle="rgba(29,42,99,.5)";c.font="22px Yomogi,sans-serif";c.textAlign="center";c.textBaseline="middle";
+    const rows=el.innerHTML.split("<br>");rows.forEach((q,i)=>c.fillText(q,px+pw/2,py+ph/2+(i-(rows.length-1)/2)*35));
+  }
+  c.restore();
+  c.save();c.translate(0,-h/2+1);c.rotate(-3*Math.PI/180);c.fillStyle="rgba(238,108,77,.38)";c.fillRect(-60,-17,120,34);c.restore();
+  c.restore();
+}
+async function xtextures(){
+  const out=[],leaves=[...bookEl.querySelectorAll(".leaf")];
+  for(let i=0;i<leaves.length;i++)for(const back of[false,true]){
+    const el=leaves[i].children[back?1:0],W=i===0?676:660,H=i===0?904:880,sc=(i===3&&back)?2.4:1.3;
+    const cv2=document.createElement("canvas");cv2.width=Math.round(W*sc);cv2.height=Math.round(H*sc);
+    const c=cv2.getContext("2d");c.scale(sc,sc);
+    if(i===0&&!back)xcover(c,el,W,H);
+    else{
+      c.fillStyle="#fffaf0";c.fillRect(0,0,W,H);
+      for(const pol of el.querySelectorAll(".pol"))await xpol(c,pol);
+      const ep=el.querySelector(".ep");
+      if(ep){
+        c.fillStyle="#1d2a63";c.textAlign="center";c.textBaseline="middle";
+        c.font='italic 500 84px "Cormorant Garamond",serif';c.fillText(ep.querySelector(".big").textContent,W/2,H/2-38);
+        c.font='600 34px "Shippori Mincho",serif';c.letterSpacing="10px";c.fillText(ep.querySelector(".jp").textContent,W/2,H/2+62);c.letterSpacing="0px";
+      }
+      const pn=el.querySelector(".pn");
+      if(pn){const right=el.classList.contains("r");c.font='italic 26px "Cormorant Garamond",serif';c.fillStyle="#b59f8a";c.textAlign=right?"right":"left";c.textBaseline="alphabetic";c.fillText(pn.textContent,right?W-46:46,H-28);}
+      const right=el.classList.contains("r"),sg=c.createLinearGradient(right?0:W,0,right?W*.09:W*.91,0);
+      sg.addColorStop(0,"rgba(80,50,30,.3)");sg.addColorStop(1,"rgba(80,50,30,0)");c.fillStyle=sg;c.fillRect(0,0,W,H);
+    }
+    out.push({cv:cv2,sc,W,H,back,leaf:i});
+  }
+  return out;
+}
+async function xaudio(END,file){
+  const SR=48000,oc=new OfflineAudioContext(2,Math.ceil((END+.8)*SR),SR),sv={AC,master,bus,NB,WS,CP:window.CP};
+  AC=null;WS=null;
+  try{
+    audioInit(oc);cinema();
+    if(file){try{const bf=await oc.decodeAudioData(await file.arrayBuffer()),src=oc.createBufferSource();src.buffer=bf;src.connect(window.CP);src.start(.2+XMOVIE);}catch(e){console.warn("movie audio",e);}}
+    return await oc.startRendering();
+  }finally{AC=sv.AC;master=sv.master;bus=sv.bus;NB=sv.NB;WS=sv.WS;window.CP=sv.CP;}
+}
+function xseek(v,t){return new Promise(r=>{const h=()=>{v.removeEventListener("seeked",h);r();};v.addEventListener("seeked",h);v.currentTime=t;setTimeout(r,2500);});}
+async function xrun(){
+  if(!g.querySelector("text"))build();
+  toast("準備中…",1);
+  try{await Promise.all([document.fonts.load('600 170px "Shippori Mincho"',"桐榮祭2026"),document.fonts.load('italic 500 84px "Cormorant Garamond"',"Memories2026"),document.fonts.load('26px Yomogi',"写真を追加main movieここにメインが流れます")]);}catch(e){}
+  let mvEl=null,mdur=3;
+  if(movieURL){
+    mvEl=document.createElement("video");mvEl.muted=true;mvEl.playsInline=true;mvEl.preload="auto";mvEl.src=movieURL;
+    await new Promise((r,j)=>{mvEl.onloadeddata=r;mvEl.onerror=()=>j(new Error("動画を読み込めませんでした"));});mdur=mvEl.duration;
+  }
+  const exitT=XMOVIE+mdur,END=exitT+1.8,NF=Math.ceil(END*XFPS);
+  const GL=[...g.querySelectorAll("text")].map(e=>({ch:e.textContent,x:+e.getAttribute("x"),y:+e.getAttribute("y"),size:+e.getAttribute("font-size"),jp:e.classList.contains("jp"),sw:+e.getAttribute("stroke-width"),t:parseFloat(e.style.getPropertyValue("--t")),d:parseFloat(e.style.getPropertyValue("--d"))}));
+  const RU=[...g.querySelectorAll("rect.rule")].map(e=>({x:+e.getAttribute("x"),y:+e.getAttribute("y"),w:+e.getAttribute("width"),t:parseFloat(e.style.getPropertyValue("--t")),d:parseFloat(e.style.getPropertyValue("--d"))}));
+  let sd=12345;const rnd=()=>{sd=(sd+0x6D2B79F5)|0;let q=Math.imul(sd^sd>>>15,1|sd);q=q+Math.imul(q^q>>>7,61|q)^q;return((q^q>>>14)>>>0)/4294967296;};
+  const PX=Array.from({length:60},()=>({x:rnd()*1920,y:rnd()*1200,r:6+rnd()*rnd()*46,v:10+rnd()*28,a:.18+rnd()*.4,ph:rnd()*6.28,c:COL[Math.floor(rnd()*COL.length)]}));
+  toast("アルバムの絵を作っています…",1);
+  const tex=await xtextures();
+  toast("音を作っています…",1);
+  const abuf=await xaudio(END,mvEl?movieFile:null);
+  const cvx=document.createElement("canvas");cvx.width=XW;cvx.height=XH;const c=cvx.getContext("2d");
+  const acv=document.createElement("canvas");acv.width=XW;acv.height=XH;const ac2=acv.getContext("2d");
+  function frame(t){
+    c.setTransform(1,0,0,1,0,0);c.globalAlpha=1;c.filter="none";c.shadowColor="transparent";c.setLineDash([]);
+    c.save();c.translate(960,486);c.scale(1056/702,1);
+    const bg=c.createRadialGradient(0,0,0,0,0,702);[[0,"#fffefa"],[.45,"#fff3e4"],[.85,"#ffdcd2"],[1,"#ffcfd6"]].forEach(q=>bg.addColorStop(q[0],q[1]));
+    c.fillStyle=bg;c.fillRect(-3000,-3000,6000,6000);c.restore();
+    if(t<15){
+      const op=t<14.1?1:1-xIN(xp(t,14.1,.9)),z=1+.07*xIO(xp(t,0,15));
+      if(op>0){
+        c.save();c.translate(960,518);c.scale(z,z);c.translate(-960,-518);
+        const env=Math.min(1,t/1.5)*(t>14.1?Math.max(0,1-(t-14.1)/.9):1);
+        for(const q of PX){
+          const y=((q.y-q.v*t)%1200+1200)%1200-60,x=q.x+Math.sin(t*.4+q.ph)*30,a=q.a*env*(.65+.35*Math.sin(t*1.2+q.ph))*op,cl=q.c;
+          const gr=c.createRadialGradient(x,y,0,x,y,q.r);gr.addColorStop(0,`rgba(${cl[0]},${cl[1]},${cl[2]},${a})`);gr.addColorStop(.7,`rgba(${cl[0]},${cl[1]},${cl[2]},${a*.5})`);gr.addColorStop(1,`rgba(${cl[0]},${cl[1]},${cl[2]},0)`);
+          c.fillStyle=gr;c.beginPath();c.arc(x,y,q.r,0,6.283);c.fill();
+        }
+        const rl=Math.max(0,3400*xRing(xp(t,.4,6))-100);
+        if(rl>0){c.globalAlpha=op;c.beginPath();c.arc(960,540,525,-100*Math.PI/180,-100*Math.PI/180+2*Math.PI*Math.min(1,rl/3299));c.strokeStyle="rgba(238,108,77,.4)";c.lineWidth=2.5;c.lineCap="round";c.stroke();}
+        for(const r of RU){const p=xRule(xp(t,r.t,r.d));if(p>0){c.globalAlpha=op;c.fillStyle="#ee6c4d";c.fillRect(r.x+r.w/2-r.w*p/2,r.y,r.w*p,3);}}
+        for(const q of GL){
+          const pd=xDraw(xp(t,q.t,q.d*2.3)),vis=Math.max(0,6100*pd-100),pf=xE(xp(t,q.t+q.d*.55,1.2)),dy=28*(1-xRise(xp(t,q.t,q.d+.5)));
+          if(vis<=0&&pf<=0)continue;
+          c.font=q.jp?`600 ${q.size}px "Shippori Mincho","Yu Mincho",serif`:`italic 500 ${q.size}px "Cormorant Garamond",Georgia,serif`;
+          c.textBaseline="alphabetic";c.lineWidth=q.sw;c.lineJoin="round";c.lineCap="round";
+          c.shadowColor="rgba(238,108,77,.28)";c.shadowBlur=14;c.shadowOffsetY=6;
+          if(pf>0){c.globalAlpha=op*pf;c.fillStyle="#1d2a63";c.fillText(q.ch,q.x,q.y+dy);}
+          if(vis>0){c.globalAlpha=op;c.setLineDash([vis,1e5]);c.strokeStyle="#ee6c4d";c.strokeText(q.ch,q.x,q.y+dy);c.setLineDash([]);}
+        }
+        c.restore();c.globalAlpha=1;c.shadowColor="transparent";
+      }
+    }
+    const albA=t<14.2?0:t<XMOVIE?xE(xp(t,14.2,1.6)):t<exitT?1-xE(xp(t,XMOVIE,1.6)):xE(xp(t,exitT,1.6));
+    if(albA>.003){ac2.setTransform(1,0,0,1,0,0);ac2.clearRect(0,0,XW,XH);xalbum(ac2,t,tex);c.globalAlpha=albA;c.drawImage(acv,0,0);c.globalAlpha=1;}
+    const movA=t<XMOVIE?0:t<exitT?xE(xp(t,XMOVIE,1)):1-xE(xp(t,exitT,1));
+    if(movA>.003){
+      c.save();c.globalAlpha=movA;
+      c.shadowColor="rgba(80,50,40,.3)";c.shadowBlur=60;c.shadowOffsetY=30;c.fillStyle="#fff";c.fillRect(160,90,1600,900);c.shadowColor="transparent";c.shadowBlur=0;c.shadowOffsetY=0;
+      if(mvEl){
+        c.fillStyle="#111";c.fillRect(176,106,1568,868);
+        const k2=Math.min(1568/mvEl.videoWidth,868/mvEl.videoHeight),w=mvEl.videoWidth*k2,h=mvEl.videoHeight*k2;c.drawImage(mvEl,176+(1568-w)/2,106+(868-h)/2,w,h);
+      }else{
+        const gr=c.createLinearGradient(176,106,1744,974);gr.addColorStop(0,"#ffd3c4");gr.addColorStop(1,"#cfe4ff");c.fillStyle=gr;c.fillRect(176,106,1568,868);
+        c.fillStyle="#1d2a63";c.textAlign="center";c.textBaseline="middle";c.font='600 46px "Shippori Mincho",serif';c.letterSpacing="9px";c.fillText("ここにメインmovieが流れます",960,520);
+        c.letterSpacing="3px";c.font="26px Yomogi,sans-serif";c.globalAlpha=movA*.7;c.fillText("写真は、アルバムの中に後から追加できます",960,590);c.letterSpacing="0px";
+      }
+      c.globalAlpha=movA;c.save();c.translate(960,91);c.rotate(-2*Math.PI/180);c.fillStyle="rgba(238,108,77,.4)";c.fillRect(-90,-19,180,38);c.restore();
+      c.restore();
+    }
+    const fl=t<22.7?0:t<XMOVIE?xE(xp(t,22.7,.7)):1-xE(xp(t,XMOVIE,1.6));
+    if(fl>.003){c.globalAlpha=fl;const gr=c.createRadialGradient(960,540,0,960,540,1101);gr.addColorStop(0,"#fffefa");gr.addColorStop(1,"#fff0dc");c.fillStyle=gr;c.fillRect(0,0,XW,XH);c.globalAlpha=1;}
+  }
+  const muxer=new Mp4Muxer.Muxer({target:new Mp4Muxer.ArrayBufferTarget(),video:{codec:"avc",width:XW,height:XH},audio:{codec:"aac",numberOfChannels:2,sampleRate:48000},fastStart:"in-memory",firstTimestampBehavior:"offset"});
+  let vcfg=null;
+  for(const codec of["avc1.640028","avc1.4d0028","avc1.42001f"]){const cfg={codec,width:XW,height:XH,bitrate:16e6,framerate:XFPS};if((await VideoEncoder.isConfigSupported(cfg)).supported){vcfg=cfg;break;}}
+  if(!vcfg)throw new Error("H.264エンコーダが使えません");
+  let encErr=null;
+  const venc=new VideoEncoder({output:(ch,meta)=>muxer.addVideoChunk(ch,meta),error:e=>{encErr=e;}});venc.configure(vcfg);
+  const aenc=new AudioEncoder({output:(ch,meta)=>muxer.addAudioChunk(ch,meta),error:e=>{encErr=e;}});
+  aenc.configure({codec:"mp4a.40.2",sampleRate:48000,numberOfChannels:2,bitrate:256000});
+  const L0=abuf.getChannelData(0),R0=abuf.getChannelData(1),st=Math.round(.2*48000),tot=Math.round(END*48000);
+  for(let i=0;i<tot;i+=9600){
+    const n=Math.min(9600,tot-i),d=new Float32Array(n*2);d.set(L0.subarray(st+i,st+i+n),0);d.set(R0.subarray(st+i,st+i+n),n);
+    aenc.encode(new AudioData({format:"f32-planar",sampleRate:48000,numberOfFrames:n,numberOfChannels:2,timestamp:Math.round(i/48000*1e6),data:d}));
+    if(aenc.encodeQueueSize>30)await xsleep(5);
+  }
+  for(let i=0;i<NF;i++){
+    if(encErr)throw encErr;
+    const t=i/XFPS;
+    if(mvEl&&t>=XMOVIE&&t<=exitT)await xseek(mvEl,Math.min(Math.max(0,mdur-.04),t-XMOVIE));
+    frame(t);
+    const vf=new VideoFrame(cvx,{timestamp:Math.round(i*1e6/XFPS),duration:Math.round(1e6/XFPS)});
+    venc.encode(vf,{keyFrame:i%60===0});vf.close();
+    while(venc.encodeQueueSize>6)await xsleep(5);
+    if(i%10===0){toast("書き出し中… "+Math.round(i/NF*100)+"%",1);await xsleep(0);}
+  }
+  await venc.flush();await aenc.flush();if(encErr)throw encErr;
+  muxer.finalize();
+  const a=document.createElement("a");a.href=URL.createObjectURL(new Blob([muxer.target.buffer],{type:"video/mp4"}));a.download="kiritoh_movie.mp4";a.click();
+  toast("mp4を保存しました");
+}
 async function exportVideo(){
   if(exporting)return;
-  const mt=window.MediaRecorder&&["video/mp4;codecs=avc1.42E01E,mp4a.40.2","video/mp4","video/webm;codecs=vp9,opus","video/webm"].find(t=>MediaRecorder.isTypeSupported(t));
-  if(!mt||!navigator.mediaDevices||!navigator.mediaDevices.getDisplayMedia){toast("このブラウザでは書き出せません。PCのChromeか、Blender版をお使いください");return;}
-  let vs;
-  try{vs=await navigator.mediaDevices.getDisplayMedia({video:{frameRate:30},audio:false,preferCurrentTab:true,selfBrowserSurface:"include"});}
-  catch(e){toast("画面の共有が許可されませんでした。ページを単独のタブで開いて、もう一度お試しください");return;}
-  const vt=vs.getVideoTracks()[0];
-  try{if(window.CropTarget&&vt.cropTo)await vt.cropTo(await CropTarget.fromElement(fit));}catch(e){}
-  if(AC){AC.close();AC=null;WS=null;}audioInit();AC.resume();
-  const rec=new MediaRecorder(new MediaStream([vt,...window.REC.stream.getAudioTracks()]),{mimeType:mt,videoBitsPerSecond:12e6}),chunks=[];
-  rec.ondataavailable=e=>{if(e.data.size)chunks.push(e.data);};
-  rec.onstop=()=>{
-    vs.getTracks().forEach(t=>t.stop());const ext=mt.includes("mp4")?"mp4":"webm";
-    const a=document.createElement("a");a.href=URL.createObjectURL(new Blob(chunks,{type:mt}));a.download="kiritoh_movie."+ext;a.click();
-    stage.classList.remove("rec");exporting=null;
-    toast(ext==="mp4"?"mp4を保存しました":"このブラウザはmp4に非対応のため、webmで保存しました");
-  };
-  exporting={rec};stage.classList.add("rec");rec.start(1000);play();
+  if(!window.VideoEncoder||!window.AudioEncoder||!window.OfflineAudioContext){toast("このブラウザはmp4の書き出しに対応していません。PCのChromeかEdgeをお使いください");return;}
+  if(!window.Mp4Muxer){toast("書き出し用の部品を読み込めませんでした。通信を確認して再読み込みしてください");return;}
+  exporting=true;
+  try{await xrun();}catch(e){console.error(e);toast("書き出しに失敗しました: "+((e&&e.message)||e));}
+  exporting=null;
 }
-function finishExport(){if(exporting&&exporting.rec.state==="recording")exporting.rec.stop();}
+function finishExport(){}
 document.getElementById("exp").onclick=exportVideo;
 
 let sx=null;
@@ -463,16 +695,17 @@ albumEl.addEventListener("pointerup",e=>{if(sx!==null&&Math.abs(e.clientX-sx)>60
 let AT=[];const at=(s,f)=>AT.push(setTimeout(f,s*1000));
 function albumSeq(){
   AT.forEach(clearTimeout);AT=[];
-  albumEl.className="";stage.classList.remove("ui","movie");flash.classList.remove("on");ui=false;k=0;apply();
+  albumEl.className="";stage.classList.remove("ui","movie");flash.classList.remove("on");ui=false;k=0;apply(1);
   if(mv)mv.pause();
   at(14.2,()=>albumEl.classList.add("show"));
   at(17,()=>{k=1;apply();albumEl.classList.add("open");});
-  at(18.8,()=>{k=2;apply();flipSound();});
-  at(19.6,()=>{k=3;apply();flipSound();});
-  at(20.4,()=>{k=4;apply();flipSound();});
+  at(19.4,()=>albumEl.classList.add("fast"));
+  at(19.6,()=>{k=2;apply();});
+  at(19.8,()=>{k=3;apply();});
+  at(20,()=>{k=4;apply();});
   at(21.4,()=>albumEl.classList.add("dive"));
   at(22.7,()=>flash.classList.add("on"));
-  at(23.4,()=>{albumEl.classList.add("snap");albumEl.classList.remove("dive");albumEl.classList.add("main");void albumEl.offsetWidth;albumEl.classList.remove("snap");flash.classList.remove("on");enterMovie();});
+  at(23.4,()=>{albumEl.classList.remove("fast");albumEl.classList.add("snap");albumEl.classList.remove("dive");albumEl.classList.add("main");void albumEl.offsetWidth;albumEl.classList.remove("snap");flash.classList.remove("on");enterMovie();});
 }
 
 /* ---------- 再生 ---------- */
@@ -488,7 +721,7 @@ function play(){
 }
 const ready=Promise.race([
   Promise.all([document.fonts.load('600 300px "Shippori Mincho"',"桐榮祭"),
-               document.fonts.load('italic 500 100px "Cormorant Garamond"',"2026The Memoryies")]),
+               document.fonts.load('italic 500 100px "Cormorant Garamond"',"2026The Memories")]),
   new Promise(r=>setTimeout(r,3500))
 ]);
 startEl.addEventListener("click",async()=>{
