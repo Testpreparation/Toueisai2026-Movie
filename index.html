@@ -19,7 +19,7 @@ html,body{height:100%;margin:0;background:var(--paper);overflow:hidden;-webkit-t
 canvas{position:absolute;inset:0}
 svg{position:absolute;inset:0;width:1920px;height:1080px;overflow:visible}
 .ch{fill:var(--ink);fill-opacity:0;stroke:var(--coral);stroke-linejoin:round;stroke-linecap:round;stroke-dasharray:6000 100000;stroke-dashoffset:6100;
- filter:drop-shadow(0 6px 14px rgba(238,108,77,.28))}
+ filter:drop-shadow(1.2px 1.6px 0 #16204e) drop-shadow(1.2px 1.6px 0 #16204e) drop-shadow(1.2px 1.6px 0 #16204e) drop-shadow(1.2px 1.6px 0 #16204e) drop-shadow(1.2px 1.6px 0 #16204e) drop-shadow(1.2px 1.6px 0 #16204e) drop-shadow(1.2px 1.6px 0 #16204e) drop-shadow(1.2px 1.6px 0 #16204e) drop-shadow(1.2px 1.6px 0 #16204e) drop-shadow(0 6px 14px rgba(238,108,77,.28))}
 .jp{font-family:"Shippori Mincho","Yu Mincho","Hiragino Mincho ProN",serif;font-weight:600}
 .en{font-family:"Cormorant Garamond","Georgia",serif;font-style:italic;font-weight:500}
 .ring{fill:none;stroke:var(--coral);stroke-width:2.5;stroke-opacity:.4;stroke-dasharray:3300 100000;stroke-dashoffset:3400;stroke-linecap:round}
@@ -28,7 +28,7 @@ svg{position:absolute;inset:0;width:1920px;height:1080px;overflow:visible}
 @keyframes fillin{to{fill-opacity:1}}
 @keyframes rise{from{transform:translateY(28px)}to{transform:none}}
 @keyframes grow{to{transform:scaleX(1)}}
-@keyframes zoom{from{transform:scale(1)}to{transform:scale(1.07)}}
+@keyframes zoom{from{transform:perspective(2600px) rotateY(-6deg) rotateX(2deg) scale(1)}to{transform:perspective(2600px) rotateY(5deg) rotateX(-1deg) scale(1.07)}}
 @keyframes out{to{opacity:0;visibility:hidden}}
 .play #cam{animation:zoom 15s ease-in-out both}
 .play #fade{animation:out .9s ease-in 14.1s both}
@@ -57,9 +57,18 @@ svg{position:absolute;inset:0;width:1920px;height:1080px;overflow:visible}
 #album.snap #cam2,#album.snap #book,#album.snap .leaf,#album.snap #shadow{transition:none!important}
 #book{position:absolute;left:-660px;top:-440px;width:1320px;height:880px;transform:translateX(-330px);transition:transform 2.2s cubic-bezier(.45,.05,.2,1)}
 #album.open #book{transform:none}
-#shadow{position:absolute;left:660px;top:30px;width:660px;height:880px;background:radial-gradient(ellipse at center,rgba(70,40,50,.42),rgba(70,40,50,0) 72%);transform:translate3d(0,40px,-60px);transition:all 2.2s cubic-bezier(.45,.05,.2,1)}
+#shadow{position:absolute;left:660px;top:30px;width:660px;height:880px;background:radial-gradient(ellipse at center,rgba(70,40,50,.5),rgba(70,40,50,0) 72%);transform:translate3d(0,40px,-60px);transition:all 2.2s cubic-bezier(.45,.05,.2,1)}
 #album.open #shadow{left:0;width:1320px}
 #baser{position:absolute;left:660px;top:0;width:660px;height:880px;background:#efe3cf;border-radius:0 6px 6px 0}
+.sh{position:absolute;left:660px;top:0;width:660px;height:880px;border-radius:0 6px 6px 0;pointer-events:none}
+.sh.bc{top:-12px;width:676px;height:904px;background:#16204e;border-radius:6px 18px 18px 6px}
+.sh.lf2{left:0;border-radius:6px 0 0 6px;opacity:0;transition:opacity 1s .5s}
+.sh.bc.lf2{left:-16px;border-radius:18px 6px 6px 18px}
+#album.open .sh.lf2{opacity:1}
+#album.snap .sh.lf2{transition:none}
+.ed{position:absolute;left:660px;top:0;width:660px;height:880px;border-radius:0 6px 6px 0;pointer-events:none}
+.ed.l{left:0;border-radius:6px 0 0 6px;opacity:0;transition:opacity 1s .5s}
+#album.open .ed.l{opacity:1}#album.snap .ed.l{transition:none}
 .leaf{position:absolute;left:660px;top:0;width:660px;height:880px;transform-origin:0 50%;transform-style:preserve-3d;transition:transform .9s cubic-bezier(.5,.08,.2,1)}
 .leaf.cv{top:-12px;height:904px;width:676px;transition-duration:2s}
 .face{position:absolute;inset:0;backface-visibility:hidden;-webkit-backface-visibility:hidden;overflow:hidden}
@@ -68,7 +77,7 @@ svg{position:absolute;inset:0;width:1920px;height:1080px;overflow:visible}
 .pg::after{content:"";position:absolute;inset:0;pointer-events:none}
 .pg.r::after{background:linear-gradient(to right,rgba(80,50,30,.3),transparent 9%)}
 .pg.l::after{background:linear-gradient(to left,rgba(80,50,30,.3),transparent 9%)}
-.pol{position:absolute;background:#fff;padding:14px 14px 58px;box-shadow:0 10px 22px rgba(80,50,40,.25),0 1px 2px rgba(0,0,0,.25);cursor:pointer}
+.pol{position:absolute;background:#fff;padding:14px 14px 58px;box-shadow:0 2px 3px rgba(0,0,0,.22),0 10px 22px rgba(80,50,40,.25),0 24px 40px rgba(80,50,40,.16);cursor:pointer}
 .pol::before{content:"";position:absolute;top:-16px;left:50%;width:120px;height:34px;margin-left:-60px;background:rgba(238,108,77,.38);transform:rotate(-3deg)}
 .ph{width:100%;height:100%;background-size:cover;background-position:center;display:grid;place-items:center;text-align:center;line-height:1.6;font:22px/1.6 Yomogi,sans-serif;color:rgba(29,42,99,.5)}
 .cap{position:absolute;left:14px;right:14px;bottom:13px;text-align:center;font:27px Yomogi,sans-serif;color:#3b3f78}
@@ -81,7 +90,7 @@ svg{position:absolute;inset:0;width:1920px;height:1080px;overflow:visible}
 .cov::after{content:"";position:absolute;inset:0;background:linear-gradient(105deg,transparent 35%,rgba(255,255,255,.15) 50%,transparent 65%) 100% 0/300% 100%;animation:sheen 6s ease-in-out 2}
 @keyframes sheen{0%{background-position:100% 0}60%,100%{background-position:-100% 0}}
 .frm{position:absolute;inset:36px;border:2px solid rgba(240,200,120,.75)}.frm::after{content:"";position:absolute;inset:9px;border:1px solid rgba(240,200,120,.45)}
-.foil{background:linear-gradient(120deg,#f6dc98,#c8922f 30%,#fbe9b0 50%,#b98228 70%,#f1d283) 0 0/250% 100%;-webkit-background-clip:text;background-clip:text;color:transparent;animation:foil 5s linear 2}
+.foil{filter:drop-shadow(0 3px 2px rgba(0,0,0,.55)) drop-shadow(0 -1px 0 rgba(255,236,170,.55));background:linear-gradient(120deg,#f6dc98,#c8922f 30%,#fbe9b0 50%,#b98228 70%,#f1d283) 0 0/250% 100%;-webkit-background-clip:text;background-clip:text;color:transparent;animation:foil 5s linear 2}
 @keyframes foil{to{background-position:-250% 0}}
 .cov .vt{position:absolute;right:120px;top:130px;writing-mode:vertical-rl;font:600 170px/1 "Shippori Mincho",serif;letter-spacing:.12em}
 .cov .yr{position:absolute;left:84px;top:140px;font:italic 500 60px "Cormorant Garamond",serif;letter-spacing:.12em}
@@ -382,6 +391,7 @@ for(let i=0;i<L;i++){
   lf.className="leaf"+(i?"":" cv");fr.className=i?"face pg r":"face";bk.className="face bk pg l";
   fr.innerHTML=i?pg(2*i-1):COVER;bk.innerHTML=pg(2*i);lf.append(fr,bk);bookEl.append(lf);
 }
+for(let j=1;j<=12;j++)for(const lf of[0,1]){const e=document.createElement("div");e.className="ed"+(lf?" l":"");e.style.cssText=`transform:translateZ(${-j*2}px);background:${j%2?"#efe3cf":"#d9c9ad"}`;bookEl.prepend(e);}
 let k=0,ui=false,phTarget=null;
 function apply(instant){
   const fast=albumEl.classList.contains("fast");
@@ -491,6 +501,9 @@ function xalbum(c,t,tex){
   const sx0=660*(1-po)-660,sx1=sx0+660+660*po;
   c.save();c.filter="blur(36px)";c.fillStyle="rgba(70,40,50,.38)";
   xpoly(c,[[sx0,-370],[sx1,-370],[sx1,510],[sx0,510]].map(q=>pr(q[0],q[1],-60,0,0)));c.fill();c.restore();c.filter="none";
+  const lay=(x0,x1,z,col,yy)=>{c.fillStyle=col;xpoly(c,[[x0,-yy],[x1,-yy],[x1,yy],[x0,yy]].map(q=>pr(q[0],q[1],z,0,0)));c.fill();};
+  lay(0,676,-20,"#16204e",452);for(let k=9;k>=1;k--)lay(0,660,-2*k,k%2?"#f1e6d2":"#e2d2b6",440);
+  if(po>.02){c.globalAlpha=po;lay(-676,0,-20,"#16204e",452);for(let k=9;k>=1;k--)lay(-660,0,-2*k,k%2?"#f1e6d2":"#e2d2b6",440);c.globalAlpha=1;}
   c.fillStyle="#efe3cf";xpoly(c,[[0,-440],[660,-440],[660,440],[0,440]].map(q=>pr(q[0],q[1],0,0,0)));c.fill();
   const N=10,M=12,list=[];
   for(const f of tex){
@@ -623,7 +636,7 @@ async function xrun(){
           c.font=q.jp?`600 ${q.size}px "Shippori Mincho","Yu Mincho",serif`:`italic 500 ${q.size}px "Cormorant Garamond",Georgia,serif`;
           c.textBaseline="alphabetic";c.lineWidth=q.sw;c.lineJoin="round";c.lineCap="round";
           c.shadowColor="rgba(238,108,77,.28)";c.shadowBlur=14;c.shadowOffsetY=6;
-          if(pf>0){c.globalAlpha=op*pf;c.fillStyle="#1d2a63";c.fillText(q.ch,q.x,q.y+dy);}
+          if(pf>0){c.globalAlpha=op*pf;const sk=c.shadowColor;c.shadowColor="transparent";c.fillStyle="#16204e";for(let k=5;k>=1;k--)c.fillText(q.ch,q.x+k*1.2,q.y+dy+k*1.6);c.shadowColor=sk;c.fillStyle="#1d2a63";c.fillText(q.ch,q.x,q.y+dy);}
           if(vis>0){c.globalAlpha=op;c.setLineDash([vis,1e5]);c.strokeStyle="#ee6c4d";c.strokeText(q.ch,q.x,q.y+dy);c.setLineDash([]);}
         }
         c.restore();c.globalAlpha=1;c.shadowColor="transparent";
@@ -730,6 +743,10 @@ startEl.addEventListener("click",async()=>{
   audioInit();AC.resume();startEl.classList.add("gone");await ready;play();
 });
 stage.addEventListener("click",()=>{if(hint.classList.contains("on"))play();});
+
+/* 立体感: アルバムの厚み (ページの小口と裏表紙) */
+(function(){const b=document.getElementById("book"),mk=(c,z,bg)=>{const d=document.createElement("div");d.className=c;d.style.transform=`translateZ(${z}px)`;if(bg)d.style.background=bg;b.appendChild(d)};
+for(const l of["","lf2"]){mk("sh bc "+l,-20);for(let k=9;k>=1;k--)mk("sh "+l,-2*k,k%2?"#f1e6d2":"#e2d2b6")}})();
 </script>
 </body>
 </html>
